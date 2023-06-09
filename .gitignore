@@ -2,4 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+.Ds_Store
 template.Rmd
+*.log

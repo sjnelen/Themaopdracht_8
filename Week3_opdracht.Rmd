@@ -17,7 +17,7 @@ linkcolor: blue
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction
+# Introductie
 
 In dit onderzoek worden de waardes van het model vergeleken met de waardes van
 het fysieke onderzoek bij de ratten. Dit zorgt ervoor dat de werking van het model
@@ -26,12 +26,22 @@ verschillende grafieken de resultaten van het model en het experiment vergeleken
 Nu is dus de vraag of dit te behalen is met de verschillende grafieken en of dit
 een goed beeld geeft.
 
-## Goal
+## Doel
+
+Met dit onderzoek word dus vooral gekeken naar de werking van het model ten opzichte
+van de resultaten uit de echte wereld. Dit doel word behaald door de verschillende
+waardes uit het model en het onderzoek te vergelijken. Door grafieken te maken
+worden ze het best vergeleken en is het ook op een overzichtelijke manier te zien.
+De verwachting zal zijn dat het model in grote lijnen overeen zal komen met het 
+experiment. Bij het experiment is er natuurlijk altijd een mogelijkheid op uitschieters
+en meetfouten. Hierdoor kan het zijn dat op sommige punten de waardes niet overeen
+komen.
+
   - Describe Goal (not the educational goal but the research goal)
   - Describe how you reach the goal (e.g. make model and figures, use different setting)
   - formulate hypothesis
 
-## Theory
+## Theorie
 
 In figuur 1 wordt een biologisch model weergegeven van de werking van corticosteroïden. 
 De eerste stap is via diffusie de corticosteroïden binnen krijgen in de cel. Deze 
@@ -46,21 +56,24 @@ moment een evenwicht bereikt. Dit is te zien in de resultaten die uit het model 
 #|  de expressie van glucocorticoid receptoren"
 knitr::include_graphics('images/week2.png')
 ```
-
 ## Functions
 
 $$\frac {dmRNA_{R}}{dt} = k_{s\_Rm} * \biggl(1-\frac {DR(N)}{IC_{50\_Rm} + DR(N)}\biggr) - k_{d\_Rm} * mRNA_{R}$$
-
 $$\frac {dR}{dt} = k_{s\_R} * mRNA_{R} + R_{f} * k_{re} * DR(N) - k_{on} * D * R - k_{d\_R} * R$$
-
 $$\frac {dDR}{dt} = k_{on} * D * R - k_{T} * DR$$
-
 $$\frac {dDR(N)}{dt} = k_{T} * DR - k_{re} * DR(N)$$
-
 ```{r}
 data_MPL <- read.csv("MPL.csv", na.strings = "NA")
 median_MPL_01 <- median(data_MPL$MPL_conc[data_MPL$dose==0.1], na.rm=TRUE)
+median_MPL_03 <- median(data_MPL$MPL_conc[data_MPL$dose==0.3], na.rm=TRUE)
 ```
+
+Voor de concentratie van methylprednisolon (MPL) word de mediaan van alle concentraties 
+over de tijdstippen berekend, zoals hierboven in het code blok te zien is. Dit 
+gebeurd voor elke doses apart waarbij de volgende waardes uitkomen: `r median_MPL_01` 
+ng/ml en `r median_MPL_03` ng/ml. Deze waardes voor respectievelijk de 0.1 en 0.3 
+doses worden gebruikt bij het omzetten naar de juiste eenheden voor de concentratie 
+MPL in het model.
 
 ```{r}
 medians <- aggregate(data_MPL[,c("MPL_conc","mRNA","Free_receptor")],
@@ -68,9 +81,25 @@ medians <- aggregate(data_MPL[,c("MPL_conc","mRNA","Free_receptor")],
                      median, na.rm=TRUE)
 names(medians)[1:2] <- c("dose","time")
 ```
+
+Verder wordt de dataset nog wat opgeschoond zodat die wat makkelijker in gebruik
+is. Op elk tijdstip in de dataset zijn namelijk vier metingen om de kans op
+meetfouten te verkleinen. Ook hier wordt daarom weer de mediaan per doses per 
+tijdstip gepakt van de metingen, waarna deze worden samengevoegd in een nieuwe
+dataset. De manier waarop dit gebeurt word hierboven beschreven.
+
 # Methods
 
 ## The software model
+
+Het model word gesimuleerd met verschillende formules. Dit gebeurd doormiddel van
+de r (versie 4.3.0) programmeer taal. De gebruikte IDE is RStudio (versie 2023.03.0)
+met de deSolve (versie 1.35) library. Om door het model heen te lopen word er een
+functie opgezet waarbij alle wiskundige formules worden ingevoerd. Door de deSolve functie 
+ode() aan te roepen kan er door de model functie heen gelopen worden. Aan deze deSolve
+functie worden alle parameters, de startwaarde en de looptijd meegegeven. Op deze 
+manier worden de verschillende waardes op een bepaald tijdpunt berekend en is er in
+dit geval een biologisch proces gemodelleerd.
 
 - Describe the software tools used, as well as the libraries
 - Describe the software implementation (note: code below is an example)
@@ -136,7 +165,8 @@ $R_{f}$              & 0.49             &                                       
 $k_{d\_R}$           & 0.0572           & 1 / h                                 \\ \hline
 $k_{d\_Rm}$          & 0.612            &                                       \\ \hline
 $k_{s\_R}$           & 3.22             &                                       \\ \hline
-$D$                  & `r nmol`         & nmol/L                                \\ \hline
+$D0.1$               & `r nmol0.1`      & nmol/L                                \\ \hline
+$D0.3$               & `r nmol0.3`      & nmol/L                                \\ \hline
 \end{longtable}
 
 \begin{longtable}[l]{l|l|l}
