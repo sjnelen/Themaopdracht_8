@@ -153,6 +153,8 @@ $DR(N)$              & 0                & fmol/mg protein                       
 
 # Results
 Introduction of results, how does it answer your research questions.
+
+## Opdracht 1
 ```{r}
 if (!require("ggplot2", quietly = TRUE))
     install.packages("ggplot2")
@@ -201,8 +203,12 @@ zijn die moeilijk in een model zijn weer te geven. In het echt kan natuurlijk
 een deel van het medicijn nooit binden aan de receptor en meteen afgevoerd worden.
 Deze dingen zijn natuurlijk moeilijk weer te geven in een model en kan de verschillen
 in sommige resultaten verklaren. Maar over het algemeen lijken het model en de 
-onderzoeks resultaten goed overeen te komen.
+onderzoeksresultaten goed overeen te komen.
 
+## Opdracht 2
+```{r}
+
+```
 - Describe what can be seen in such way that it leads to an answer to your research questions
 - Give your figures a number and a descriptive title.
 - Provide correct axis labels (unit and quantity), legend and caption.
