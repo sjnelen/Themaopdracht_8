@@ -108,17 +108,6 @@ if (!require("deSolve", quietly = TRUE))
     install.packages("deSolve")
 library(deSolve)
 
-volume_D0.1 <- 14.59
-molar_mass <- 374.471
-nmol0.1 <- volume_D0.1 * 1000 * (1/ molar_mass)
-parameters0.1 <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
-                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, D = nmol0.1)
-
-volume_D0.3 <- 39.925
-nmol0.3 <- volume_D0.3 * 1000 * (1/ molar_mass)
-parameters0.3 <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
-                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, D = nmol0.3)
-
 model <- function(t, y, parms){
   with(as.list(c(y, parms)),{
     dmRNA.R_dt <- ks_Rm * (1-(drn/(IC50_Rm + drn))) - kd_Rm * mRNA.R
@@ -136,11 +125,18 @@ model <- function(t, y, parms){
 
 state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
 times <- seq(0, 168, by = 1)
+molar_mass <- 374.471
+
+parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
+                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
+                D = median_MPL_01 * 1000 * (1/ molar_mass))
 
 output0.1 <- as.data.frame(ode(y = state, times = times, func = model, 
-                               parms = parameters0.1))
+                               parms = parameters))
+
+parameters["D"] <- median_MPL_03 * 1000 * (1/ molar_mass)
 output0.3 <- as.data.frame(ode(y = state, times = times, func = model, 
-                               parms = parameters0.3))
+                               parms = parameters))
 ```
 
 ## Model configuration
@@ -243,7 +239,265 @@ onderzoeksresultaten goed overeen te komen.
 ## Opdracht 2
 ```{r}
 
+model_adjusted <- function(t, y, parms){
+  with(as.list(c(y, parms)),{
+    dmRNA.R_dt <- ks_Rm * (1-(drn * 0 / (IC50_Rm + drn * 0))) - kd_Rm * mRNA.R
+    
+    dR_dt <- ksr * mRNA.R + Rf * kre * drn - kon * D * R - kd_R * R
+    
+    dDR_dt <- kon * D * R - kT * dr
+    
+    dDRN_dt <- kT * dr - kre * drn 
+    
+    return(list(c(dmRNA.R_dt, dR_dt, dDR_dt, dDRN_dt)))
+  }
+  )
+}
+
+state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
+times <- seq(0, 168, by = 1)
+
+parameters["D"] <- 20 * 1000 * (1/ molar_mass)
+
+output_normal <- as.data.frame(ode(y = state, times = times, func = model, 
+                                   parms = parameters))
+output_adjusted <- as.data.frame(ode(y = state, times = times, func = model_adjusted, 
+                                     parms = parameters))
+
+ggplot(data = output_normal, aes(x=time, y=dr)) + geom_line() +
+  geom_line(data = output_adjusted, aes(x=time, y=dr), color = "red")
+
 ```
+```{r}
+
+model_adjusted <- function(t, y, parms){
+  with(as.list(c(y, parms)),{
+    dmRNA.R_dt <- ks_Rm * (1-(drn * 0 / (IC50_Rm + drn * 0))) - kd_Rm * mRNA.R
+    
+    dR_dt <- ksr * mRNA.R + Rf * kre * drn - kon * D * R - kd_R * R
+    
+    dDR_dt <- kon * D * R - kT * dr
+    
+    dDRN_dt <- kT * dr - kre * drn 
+    
+    return(list(c(dmRNA.R_dt, dR_dt, dDR_dt, dDRN_dt)))
+  }
+  )
+}
+
+state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
+times_steady <- seq(0, 50)
+times_steady_second <- seq(50, 168)
+
+parameters["D"] <- 20 * 1000 * (1/ molar_mass)
+
+output_steady <- as.data.frame(ode(y = state, times = times_steady, 
+                                   func = model, parms = parameters))
+
+parameters["D"] <- 0
+state <- unlist(tail(output_steady, n=1)[,-1])
+output_steady_second <- as.data.frame(ode(y = state, 
+                                          times = times_steady_second, 
+                                          func = model, 
+                                          parms = parameters))
+
+ggplot(data = output_steady, aes(x=time, y=mRNA.R)) + geom_line() +
+  geom_line(data = output_steady_second, aes(x=time, y=mRNA.R))
+
+```
+```{r}
+if (!require("tidyr", quietly = TRUE))
+    install.packages("tidyr")
+library(tidyr)
+
+state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
+times <- seq(0, 168, by = 1)
+molar_mass <- 374.471
+
+parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
+                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
+                D = 20 * 1000 * (1/ molar_mass))
+
+kon_normal <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+parameters["kon"] <- 0.00329/5
+kon_divided5 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                  parms = parameters))
+parameters["kon"] <- 0.00329/2
+kon_divided2 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                  parms = parameters))
+parameters["kon"] <- 0.00329*5
+kon_times5 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+parameters["kon"] <- 0.00329*2
+kon_times2 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+
+parameters["kon"] <- 0.00329
+
+kre_normal <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+parameters["kre"] <- 0.57/5
+kre_divided5 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                  parms = parameters))
+parameters["kre"] <- 0.57/2
+kre_divided2 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                  parms = parameters))
+parameters["kre"] <- 0.57*5
+kre_times5 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+parameters["kre"] <- 0.57*2
+kre_times2 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+
+kon_mRNA.R <- ggplot(kon_normal, aes(x = time)) + geom_line(aes(y = mRNA.R, color = "normal")) + 
+  geom_line(data = kon_divided5, aes(y = mRNA.R, color = "divided by 5")) + 
+  geom_line(data = kon_divided2, aes(y = mRNA.R, color = "divided by 2")) + 
+  geom_line(data = kon_times5, aes(y = mRNA.R, color = "times 5")) + 
+  geom_line(data = kon_times2, aes(y = mRNA.R, color = "times 2")) +
+  scale_color_brewer("K_on",
+                     breaks = c("normal", "divided by 5", "divided by 2", "times 5", "times 2"),
+                     palette = "Set1")
+
+kon_R <- ggplot(kon_normal, aes(x = time)) + geom_line(aes(y = R, color = "normal")) + 
+  geom_line(data = kon_divided5, aes(y = R, color = "divided by 5")) + 
+  geom_line(data = kon_divided2, aes(y = R, color = "divided by 2")) + 
+  geom_line(data = kon_times5, aes(y = R, color = "times 5")) + 
+  geom_line(data = kon_times2, aes(y = R, color = "times 2")) +
+  scale_color_brewer("K_on",
+                     breaks = c("normal", "divided by 5", "divided by 2", "times 5", "times 2"),
+                     palette = "Set1")
+
+plot_grid(kon_mRNA.R, kon_R, labels = "AUTO")
+
+kre_mRNA.R <- ggplot(kre_normal, aes(x = time)) + geom_line(aes(y = mRNA.R, color = "normal")) + 
+  geom_line(data = kre_divided5, aes(y = mRNA.R, color = "divided by 5")) + 
+  geom_line(data = kre_divided2, aes(y = mRNA.R, color = "divided by 2")) + 
+  geom_line(data = kre_times5, aes(y = mRNA.R, color = "times 5")) + 
+  geom_line(data = kre_times2, aes(y = mRNA.R, color = "times 2")) +
+  scale_color_brewer("K_re" ,
+                     breaks = c("normal", "divided by 5", "divided by 2", "times 5", "times 2"),
+                     palette = "Set1")
+
+kre_R <- ggplot(kre_normal, aes(x = time)) + geom_line(aes(y = R, color = "normal")) + 
+  geom_line(data = kre_divided5, aes(y = R, color = "divided by 5")) + 
+  geom_line(data = kre_divided2, aes(y = R, color = "divided by 2")) + 
+  geom_line(data = kre_times5, aes(y = R, color = "times 5")) + 
+  geom_line(data = kre_times2, aes(y = R, color = "times 2")) +
+  scale_color_brewer("K_re",
+                     breaks = c("normal", "divided by 5", "divided by 2", "times 5", "times 2"),
+                     palette = "Set1")
+
+plot_grid(kre_mRNA.R, kre_R, labels = "AUTO")
+```
+
+```{r}
+model_adjusted <- function(t, y, parms){
+  with(as.list(c(y, parms)),{
+    dmRNA.R_dt <- ks_Rm * (1-(drn / (IC50_Rm + drn))) - kd_Rm * mRNA.R
+    
+    dR_dt <- ksr * mRNA.R + Rf * kre * drn - kon * D * R - kd_R * R
+    
+    dDR_dt <- kon * D * R - kT * dr
+    
+    dDRN_dt <- kT * dr - kre * drn 
+    
+    return(list(c(dmRNA.R_dt, dR_dt, dDR_dt, dDRN_dt)))
+  }
+  )
+}
+
+parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
+                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
+                D = 20 * 1000 * (1/ molar_mass))
+
+parameters["ksr"] <- 0
+ksr_0 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                parms = parameters))
+
+plot.ksr.mRNA_R <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = mRNA.R, color = "Normal")) +
+  geom_line(data = ksr_0, aes(y = mRNA.R, color = "Ksr as 0")) +
+  scale_color_brewer("Kre", breaks = c("Normal", "Ksr as 0"), palette = "Set1")
+
+plot.ksr.R <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = R, color = "Normal")) +
+  geom_line(data = ksr_0, aes(y = R, color = "Ksr as 0")) +
+  scale_color_brewer("Kre", breaks = c("Normal", "Ksr as 0"), palette = "Set1")
+
+plot.ksr.dr <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = dr, color = "Normal")) +
+  geom_line(data = ksr_0, aes(y = dr, color = "Ksr as 0")) +
+  scale_color_brewer("Kre", breaks = c("Normal", "Ksr as 0"), palette = "Set1")
+
+plot.ksr.drn <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = drn, color = "Normal")) +
+  geom_line(data = ksr_0, aes(y = drn, color = "Ksr as 0")) +
+  scale_color_brewer("Kre", breaks = c("Normal", "Ksr as 0"), palette = "Set1")
+
+plot_grid(plot.ksr.mRNA_R, plot.ksr.R, plot.ksr.dr, plot.ksr.drn, labels = "AUTO")
+```
+```{r}
+parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
+                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
+                D = 20 * 1000 * (1/ molar_mass))
+times <- seq(0, 40)
+
+output_normal <- as.data.frame(ode(y = state, times = times, func = model, 
+                                   parms = parameters)) 
+
+parameters["ks_Rm"] <- 2.9 / 5
+parameters["kd_Rm"] <- 2.9 / 5 / 4.74
+ksrm_divided5 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                   parms = parameters))
+parameters["ks_Rm"] <- 2.9 / 2
+parameters["kd_Rm"] <- 2.9 / 2 / 4.74
+ksrm_divided2 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                   parms = parameters))
+parameters["ks_Rm"] <- 2.9 * 5
+parameters["kd_Rm"] <- 2.9 * 5 / 4.74
+ksrm_times5 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                   parms = parameters))
+parameters["ks_Rm"] <- 2.9 * 2
+parameters["kd_Rm"] <- 2.9 * 2 / 4.74
+ksrm_times2 <- as.data.frame(ode(y = state, times = times, func = model, 
+                                   parms = parameters))
+
+plot.ks_Rm.mRNA_R <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = mRNA.R, color = "Normal")) +
+  geom_line(data = ksrm_divided5, aes(y = mRNA.R, color = "divided by 5")) +
+  geom_line(data = ksrm_divided2, aes(y = mRNA.R, color = "divided by 2")) +
+  geom_line(data = ksrm_times5, aes(y = mRNA.R, color = "times 5")) +
+  geom_line(data = ksrm_times2, aes(y = mRNA.R, color = "times 2")) +
+  scale_color_brewer("ks_Rm & kd_RM", 
+                     breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
+                     palette = "Set1")
+
+plot.ks_Rm.R <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = R, color = "Normal")) +
+  geom_line(data = ksrm_divided5, aes(y = R, color = "divided by 5")) +
+  geom_line(data = ksrm_divided2, aes(y = R, color = "divided by 2")) +
+  geom_line(data = ksrm_times5, aes(y = R, color = "times 5")) +
+  geom_line(data = ksrm_times2, aes(y = R, color = "times 2")) +
+  scale_color_brewer("ks_Rm & kd_RM", 
+                     breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
+                     palette = "Set1")
+
+plot.ks_Rm.dr <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = dr, color = "Normal")) +
+  geom_line(data = ksrm_divided5, aes(y = dr, color = "divided by 5")) +
+  geom_line(data = ksrm_divided2, aes(y = dr, color = "divided by 2")) +
+  geom_line(data = ksrm_times5, aes(y = dr, color = "times 5")) +
+  geom_line(data = ksrm_times2, aes(y = dr, color = "times 2")) +
+  scale_color_brewer("ks_Rm & kd_RM", 
+                     breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
+                     palette = "Set1")
+
+plot.ks_Rm.drn <- ggplot(output_normal, aes(x = time)) + geom_line(aes(y = drn, color = "Normal")) +
+  geom_line(data = ksrm_divided5, aes(y = drn, color = "divided by 5")) +
+  geom_line(data = ksrm_divided2, aes(y = drn, color = "divided by 2")) +
+  geom_line(data = ksrm_times5, aes(y = drn, color = "times 5")) +
+  geom_line(data = ksrm_times2, aes(y = drn, color = "times 2")) +
+  scale_color_brewer("ks_Rm & kd_RM", 
+                     breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
+                     palette = "Set1")
+
+plot_grid(plot.ks_Rm.mRNA_R, plot.ks_Rm.R, plot.ks_Rm.dr, plot.ks_Rm.drn, labels = "AUTO")
+```
+
 - Describe what can be seen in such way that it leads to an answer to your research questions
 - Give your figures a number and a descriptive title.
 - Provide correct axis labels (unit and quantity), legend and caption.
