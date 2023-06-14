@@ -61,7 +61,7 @@ moment een evenwicht bereikt. Dit is te zien in de resultaten die uit het model 
 ```{r, echo=FALSE}
 #| fig.cap="Overzicht van een biologisch model over
 #|  de expressie van glucocorticoid receptoren"
-knitr::include_graphics('images/week2.png')
+knitr::include_graphics('../images/week2.png')
 ```
 
 ## Functions
@@ -119,7 +119,7 @@ model <- function(t, y, parms){
 state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
 times <- seq(0, 48, by = 1)
 
-output <- ode(y = state, times = times, func = model, parms = parameters, method = "euler")
+output <- ode(y = state, times = times, func = model, parms = parameters)
 ```
 
 ## Model configuratie

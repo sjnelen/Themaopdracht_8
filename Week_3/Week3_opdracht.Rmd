@@ -54,7 +54,7 @@ moment een evenwicht bereikt. Dit is te zien in de resultaten die uit het model 
 ```{r, echo=FALSE}
 #| fig.cap="Overzicht van een biologisch model over
 #|  de expressie van glucocorticoid receptoren"
-knitr::include_graphics('images/week2.png')
+knitr::include_graphics('../images/week2.png')
 ```
 ## Functions
 
@@ -138,9 +138,9 @@ state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
 times <- seq(0, 168, by = 1)
 
 output0.1 <- as.data.frame(ode(y = state, times = times, func = model, 
-                               parms = parameters0.1, method = "euler"))
+                               parms = parameters0.1))
 output0.3 <- as.data.frame(ode(y = state, times = times, func = model, 
-                               parms = parameters0.3, method = "euler"))
+                               parms = parameters0.3))
 ```
 
 ## Model configuration
@@ -188,20 +188,25 @@ Introduction of results, how does it answer your research questions.
 ```{r}
 if (!require("ggplot2", quietly = TRUE))
     install.packages("ggplot2")
+if (!require("cowplot", quietly = TRUE))
+    install.packages("cowplot")
 library(ggplot2)
-#code to generate figures with title, subscripts, legenda etc
+library(cowplot)
 
-ggplot(data = output0.1, aes(x=time, y=mRNA.R)) +
+#code to generate figures with title, subscripts, legenda etc
+plot0.1 <- ggplot(data = output0.1, aes(x=time, y=mRNA.R)) +
   geom_line() +
   geom_line(data = subset(medians, dose %in% c(0.0, 0.1)), aes(x=time, y=mRNA),
             color="red") +
   geom_point(data = subset(data_MPL, dose %in% c(0.0, 0.1)), aes(x=time, y=mRNA))
 
-ggplot(data = output0.3, aes(x=time, y=mRNA.R)) +
+plot0.3 <- ggplot(data = output0.3, aes(x=time, y=mRNA.R)) + 
   geom_line() +
   geom_line(data = subset(medians, dose %in% c(0.0, 0.3)), aes(x=time, y=mRNA),
             color="red") +
   geom_point(data = subset(data_MPL, dose %in% c(0.0, 0.3)), aes(x=time, y=mRNA))
+
+plot_grid(plot0.1, plot0.3, labels = "AUTO")
 # ggplot(data = output0.1, aes(x=time, y=R)) +
 #   geom_line() +
 #   geom_line(data = subset(medians, dose %in% c(0.0, 0.1)), aes(x=time, y=Free_receptor),
@@ -214,7 +219,7 @@ ggplot(data = output0.3, aes(x=time, y=mRNA.R)) +
 #             color="red") +
 #   geom_point(data = subset(data_MPL, dose %in% c(0.0, 0.3)), aes(x=time, y=Free_receptor))
 ```
-
+## Opdracht 1
 Als is te zien in de figuren 1 en 2 geeft de rode lijn de mediaan aan van de 
 gemeten resultaten van het fysieke onderzoek. Dit geeft een beter beeld van de
 verschillende metingen omdat er op elk tijdstip 4 metingen zijn gedaan. Door
