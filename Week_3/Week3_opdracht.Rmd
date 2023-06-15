@@ -424,60 +424,60 @@ plot_grid(plot.ksr.mRNA_R, plot.ksr.R, plot.ksr.dr, plot.ksr.drn, labels = "AUTO
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
                 Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
                 D = 20 * 1000 * (1/ molar.mass))
-times <- seq(0, 40)
-
-output.normal <- as.data.frame(ode(y = state, times = times, func = model, 
-                                   parms = parameters)) 
 
 parameters["ks_Rm"] <- 2.9 / 5
 parameters["kd_Rm"] <- 2.9 / 5 / 4.74
-ksrm_divided5 <- as.data.frame(ode(y = state, times = times, func = model, 
+ksrm.divided5 <- as.data.frame(ode(y = state, times = times, func = model, 
                                    parms = parameters))
 parameters["ks_Rm"] <- 2.9 / 2
 parameters["kd_Rm"] <- 2.9 / 2 / 4.74
-ksrm_divided2 <- as.data.frame(ode(y = state, times = times, func = model, 
+ksrm.divided2 <- as.data.frame(ode(y = state, times = times, func = model, 
                                    parms = parameters))
 parameters["ks_Rm"] <- 2.9 * 5
 parameters["kd_Rm"] <- 2.9 * 5 / 4.74
-ksrm_times5 <- as.data.frame(ode(y = state, times = times, func = model, 
+ksrm.times5 <- as.data.frame(ode(y = state, times = times, func = model, 
                                    parms = parameters))
 parameters["ks_Rm"] <- 2.9 * 2
 parameters["kd_Rm"] <- 2.9 * 2 / 4.74
-ksrm_times2 <- as.data.frame(ode(y = state, times = times, func = model, 
+ksrm.times2 <- as.data.frame(ode(y = state, times = times, func = model, 
                                    parms = parameters))
 
-plot.ks_Rm.mRNA_R <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = mRNA.R, color = "Normal")) +
-  geom_line(data = ksrm_divided5, aes(y = mRNA.R, color = "divided by 5")) +
-  geom_line(data = ksrm_divided2, aes(y = mRNA.R, color = "divided by 2")) +
-  geom_line(data = ksrm_times5, aes(y = mRNA.R, color = "times 5")) +
-  geom_line(data = ksrm_times2, aes(y = mRNA.R, color = "times 2")) +
+plot.ks_Rm.mRNA_R <- ggplot(data = output.normal, aes(x = time)) + 
+  geom_line(aes(y = mRNA.R, color = "Normal")) +
+  geom_line(data = ksrm.divided5, aes(y = mRNA.R, color = "divided by 5")) +
+  geom_line(data = ksrm.divided2, aes(y = mRNA.R, color = "divided by 2")) +
+  geom_line(data = ksrm.times5, aes(y = mRNA.R, color = "times 5")) +
+  geom_line(data = ksrm.times2, aes(y = mRNA.R, color = "times 2")) +
   scale_color_brewer("ks_Rm & kd_RM", 
                      breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
                      palette = "Set1")
 
-plot.ks_Rm.R <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = R, color = "Normal")) +
-  geom_line(data = ksrm_divided5, aes(y = R, color = "divided by 5")) +
-  geom_line(data = ksrm_divided2, aes(y = R, color = "divided by 2")) +
-  geom_line(data = ksrm_times5, aes(y = R, color = "times 5")) +
-  geom_line(data = ksrm_times2, aes(y = R, color = "times 2")) +
+plot.ks_Rm.R <- ggplot(data = output.normal, aes(x = time)) + 
+  geom_line(aes(y = R, color = "Normal")) +
+  geom_line(data = ksrm.divided5, aes(y = R, color = "divided by 5")) +
+  geom_line(data = ksrm.divided2, aes(y = R, color = "divided by 2")) +
+  geom_line(data = ksrm.times5, aes(y = R, color = "times 5")) +
+  geom_line(data = ksrm.times2, aes(y = R, color = "times 2")) +
   scale_color_brewer("ks_Rm & kd_RM", 
                      breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
                      palette = "Set1")
 
-plot.ks_Rm.dr <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = dr, color = "Normal")) +
-  geom_line(data = ksrm_divided5, aes(y = dr, color = "divided by 5")) +
-  geom_line(data = ksrm_divided2, aes(y = dr, color = "divided by 2")) +
-  geom_line(data = ksrm_times5, aes(y = dr, color = "times 5")) +
-  geom_line(data = ksrm_times2, aes(y = dr, color = "times 2")) +
+plot.ks_Rm.dr <- ggplot(data = output.normal, aes(x = time)) + 
+  geom_line(aes(y = dr, color = "Normal")) +
+  geom_line(data = ksrm.divided5, aes(y = dr, color = "divided by 5")) +
+  geom_line(data = ksrm.divided2, aes(y = dr, color = "divided by 2")) +
+  geom_line(data = ksrm.times5, aes(y = dr, color = "times 5")) +
+  geom_line(data = ksrm.times2, aes(y = dr, color = "times 2")) +
   scale_color_brewer("ks_Rm & kd_RM", 
                      breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
                      palette = "Set1")
 
-plot.ks_Rm.drn <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = drn, color = "Normal")) +
-  geom_line(data = ksrm_divided5, aes(y = drn, color = "divided by 5")) +
-  geom_line(data = ksrm_divided2, aes(y = drn, color = "divided by 2")) +
-  geom_line(data = ksrm_times5, aes(y = drn, color = "times 5")) +
-  geom_line(data = ksrm_times2, aes(y = drn, color = "times 2")) +
+plot.ks_Rm.drn <- ggplot(data = output.normal, aes(x = time)) + 
+  geom_line(aes(y = drn, color = "Normal")) +
+  geom_line(data = ksrm.divided5, aes(y = drn, color = "divided by 5")) +
+  geom_line(data = ksrm.divided2, aes(y = drn, color = "divided by 2")) +
+  geom_line(data = ksrm.times5, aes(y = drn, color = "times 5")) +
+  geom_line(data = ksrm.times2, aes(y = drn, color = "times 2")) +
   scale_color_brewer("ks_Rm & kd_RM", 
                      breaks = c("Normal", "divided by 5", "divided by 2", "times 5", "times 2"), 
                      palette = "Set1")
