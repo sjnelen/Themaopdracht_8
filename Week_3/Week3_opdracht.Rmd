@@ -7,14 +7,27 @@ header-includes:
    - \usepackage{longtable}
    - \usepackage{hyperref}
 output:
-    pdf_document:
-      toc: true
-      number_sections: yes
+    bookdown::pdf_document2:
 linkcolor: blue
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+if (!require("ggplot2", quietly = TRUE))
+    install.packages("ggplot2")
+if (!require("cowplot", quietly = TRUE))
+    install.packages("cowplot")
+if (!require("deSolve", quietly = TRUE))
+    install.packages("deSolve")
+if (!require("tidyr", quietly = TRUE))
+    install.packages("tidyr")
+if (!require("bookdown", quietly = TRUE))
+    install.packages("bookdown")
+require(ggplot2)
+require(cowplot)
+require(deSolve)
+require(tidyr)
+require(bookdown)
 ```
 
 # Introductie
@@ -43,7 +56,7 @@ komen.
 
 ## Theorie
 
-In figuur 1 wordt een biologisch model weergegeven van de werking van corticosteroïden. 
+In \@ref(fig:bioModel) wordt een biologisch model weergegeven van de werking van corticosteroïden. 
 De eerste stap is via diffusie de corticosteroïden binnen krijgen in de cel. Deze 
 corticosteroïden binden zich dan aan een receptor, waarna dit receptorcomplex de 
 nucleus van een cel binnentreedt. Dit bind zich aan het target DNA waardoor de 
@@ -51,12 +64,13 @@ transcriptie van sommige onderdelen word verlaagd of verhoogd. Een van die onder
 is een vermindering in de aanmaak van receptoren. Hierdoor word er op een bepaald 
 moment een evenwicht bereikt. Dit is te zien in de resultaten die uit het model komen.
 
-```{r, echo=FALSE}
+```{r bioModel, echo=FALSE}
 #| fig.cap="Overzicht van een biologisch model over
 #|  de expressie van glucocorticoid receptoren"
 knitr::include_graphics('../images/week2.png')
 ```
-## Functions
+
+## Functies
 
 $$\frac {dmRNA_{R}}{dt} = k_{s\_Rm} * \biggl(1-\frac {DR(N)}{IC_{50\_Rm} + DR(N)}\biggr) - k_{d\_Rm} * mRNA_{R}$$
 $$\frac {dR}{dt} = k_{s\_R} * mRNA_{R} + R_{f} * k_{re} * DR(N) - k_{on} * D * R - k_{d\_R} * R$$
@@ -88,9 +102,9 @@ meetfouten te verkleinen. Ook hier wordt daarom weer de mediaan per doses per
 tijdstip gepakt van de metingen, waarna deze worden samengevoegd in een nieuwe
 dataset. De manier waarop dit gebeurt word hierboven beschreven.
 
-# Methods
+# Methode
 
-## The software model
+## Het software model
 
 Het model word gesimuleerd met verschillende formules. Dit gebeurd doormiddel van
 de r (versie 4.3.0) programmeer taal. De gebruikte IDE is RStudio (versie 2023.03.0)
@@ -104,10 +118,6 @@ dit geval een biologisch proces gemodelleerd.
 - Describe the software tools used, as well as the libraries
 - Describe the software implementation (note: code below is an example)
 ```{r}
-if (!require("deSolve", quietly = TRUE))
-    install.packages("deSolve")
-library(deSolve)
-
 model <- function(t, y, parms){
   with(as.list(c(y, parms)),{
     dmRNA.R_dt <- ks_Rm * (1-(drn / (IC50_Rm + drn))) - kd_Rm * mRNA.R
@@ -135,13 +145,15 @@ output.normal <- as.data.frame(ode(y = state, times = times, func = model,
                                    parms = parameters))
 ```
 
-## Model configuration
+## Model configuratie
 
 Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
 
 De verschillende parameters en variabelen zijn op basis van een aantal experimenten 
 met methylprednisolon in ratten bepaald. Deze parameters en variabelen zijn hieronder
 in tabel 1 en 2 te zien. De variabelen worden als startwaarden meegegeven aan het model.
+De parameters die tabel 1 te zien zijn, zijn de standaard waardes die voor sommige 
+uitvoeringen worden aangepast om de functie weer te geven.
 
 \begin{longtable}[l]{l|l|l}
 \caption{Parameter Waardes} \\ \hline
@@ -173,17 +185,13 @@ $DR(N)$              & 0                & fmol/mg protein                       
 \end{longtable}
 
 
-# Results
+# Resultaten
 Introduction of results, how does it answer your research questions.
 
 ## Opdracht 1
-```{r}
-if (!require("ggplot2", quietly = TRUE))
-    install.packages("ggplot2")
-if (!require("cowplot", quietly = TRUE))
-    install.packages("cowplot")
-library(ggplot2)
-library(cowplot)
+```{r opdracht1}
+#| fig.cap="Het verschil tussen het model, de medianen
+#|  en alle waardes uit het onderzoek"
 
 parameters["D"] <- median_MPL_01 * 1000 * (1/ molar.mass)
 Volume.D0.1 <- as.data.frame(ode(y = state, times = times, func = model, 
@@ -227,8 +235,8 @@ plot_grid(plot0.1, plot0.3, labels = "AUTO")
 #             color="red") +
 #   geom_point(data = subset(data_MPL, dose %in% c(0.0, 0.3)), aes(x=time, y=Free_receptor))
 ```
-## Opdracht 1
-Als is te zien in de figuren 1 en 2 geeft de rode lijn de mediaan aan van de 
+
+Zoals is te zien in figuur \@ref(fig:opdracht1) geeft de groene lijn de mediaan aan van de 
 gemeten resultaten van het fysieke onderzoek. Dit geeft een beter beeld van de
 verschillende metingen omdat er op elk tijdstip 4 metingen zijn gedaan. Door
 deze dan weer te geven met de mediaan worden uitschieters en bijvoorbeeld meetfouten
@@ -249,8 +257,11 @@ in sommige resultaten verklaren. Maar over het algemeen lijken het model en de
 onderzoeksresultaten goed overeen te komen.
 
 ## Opdracht 2
-```{r}
-
+```{r autoRegulation}
+#| fig.cap="Het verschil tussen het standaard model
+#|  en een model waar de regulatie van de glucocorticoid 
+#|  receptor is weggevallen."
+# Adjusted the model to reflect the assignments question.
 model_adjusted <- function(t, y, parms){
   with(as.list(c(y, parms)),{
     dmRNA.R_dt <- ks_Rm * (1-(drn * 0 / (IC50_Rm + drn * 0))) - kd_Rm * mRNA.R
@@ -266,44 +277,72 @@ model_adjusted <- function(t, y, parms){
   )
 }
 
-parameters["D"] <- 20 * 1000 * (1/ molar.mass)
+# Set the parameters to base value and run the simulation.
+parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
+                Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
+                D = 20 * 1000 * (1/ molar.mass))
 output.adjusted <- as.data.frame(ode(y = state, times = times, func = model_adjusted, 
                                      parms = parameters))
 
+# Plot the output form the adjusted model in a ggplot line plot.
 ggplot(data = output.normal, aes(x=time)) + 
   geom_line(aes(y = dr, color = "Normal")) +
-  geom_line(data = output.adjusted, aes(x=time, y=dr, color = "Adjusted")) +
+  geom_line(data = output.adjusted, aes(y=dr, color = "Adjusted")) +
   scale_color_brewer("",
                      breaks = c("Normal", "Adjusted"),
                      palette = "Set1")
 
 ```
 
-```{r}
+In dit scenario heeft het medicijn geen invloed op de synthese van het mRNA. 
+Dit is goed te zien in figuur \@ref(fig:autoRegulation), met het aangepaste model
+komen de waardes van de dichtheid van het MPL-receptor complex een stuk hoger uit.
+Dit komt doordat de synthese van het mRNA gewoon doorgaat en niet word gestopt
+door een gebonden receptor. Hierdoor blijven er receptors gemaakt worden waar 
+MPL aan kan blijven binden. En zonder deze regulatie komt de dichtheid van MPL-rececptor 
+complexen op een hogere stabiele toestand uit dan met regulatie.
+```{r steadyState}
+#| fig_cap = "De werking van het medicijn op de mRNA en receptor concentratie"
+
+# Set start state to the base values.
+state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
+# Set the time course till the model reaches a steady state an run the model.
 times <- seq(0, 50)
 parameters["D"] <- 20 * 1000 * (1/ molar.mass)
 D.steady <- as.data.frame(ode(y = state, times = times, func = model, 
                                    parms = parameters))
 
+# Continue the model with the drug concentration at 0 and the last values from
+# the run above.
 times <- seq(50, 168)
 parameters["D"] <- 0
 state <- unlist(tail(D.steady, n=1)[,-1])
-D.steady.second <- as.data.frame(ode(y = state, 
-                                          times = times, 
-                                          func = model, 
-                                          parms = parameters))
+D.steady.second <- as.data.frame(ode(y = state, times = times, 
+                                     func = model, parms = parameters))
 
-ggplot(data = D.steady, aes(x=time)) + 
-  geom_line(aes(y=mRNA.R)) +
-  geom_line(data = D.steady.second, aes(x=time, y=mRNA.R))
+# Plot the data from the two model outputs to combine the data in one graph.
+steady.mRNA <- ggplot(data = D.steady, aes(x = time)) + 
+  geom_line(aes(y = mRNA.R)) +
+  geom_line(data = D.steady.second, aes(y = mRNA.R))
 
+steady.R <- ggplot(data = D.steady, aes(x = time)) + 
+  geom_line(aes(y = R)) +
+  geom_line(data = D.steady.second, aes(y = R))
+
+plot_grid(steady.mRNA, steady.R, labels = "AUTO")
 ```
+Verder word er nog naar het model gekeken als op een punt de concentratie van 
+het medicijn in een keer naar 0 gaat. Als punt is de evenwichtstoestand gekozen, 
+op deze manier is er ook een duidelijk verschil te zien tussen de fases. Er wordt
+gekeken naar de mRNA en receptor concentraties in figuur \@reg(fig:steadyState).
+Dit zijn respectievelijk grafiek A en B in de figuur. Zoals goed te zien is schieten
+deze waardes weer terug omhoog zodra de concentratie van het medicijn op 0 wordt 
+gezet. De reden hiervoor is dat er geen MPL-receptor complexen meer ontstaan die 
+de synthese van mRNA stoppen. Hierdoor zullen de concentraties van de receptor 
+en mRNA weer terug omhoog schieten.
 
-```{r}
-if (!require("tidyr", quietly = TRUE))
-    install.packages("tidyr")
-library(tidyr)
-
+```{r differentCort}
+#| fig_cap = "De werking van verschillende corticosteroïden"
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
                 Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
                 D = 20 * 1000 * (1/ molar.mass))
@@ -379,8 +418,24 @@ kre.R <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = R, color = "no
 
 plot_grid(kre.mRNA.R, kre.R, labels = "AUTO")
 ```
+In figuur \@ref(fig:differentCort) worden verschillende soorten corticosteroïden
+gebruikt voor de simulatie van het model. Dit wordt gedaan door de parameters k_on
+en k_re aan te passen. K_on is de snelheid van binden aan de receptor en k_re is het 
+loslaten van de receptor. Deze snelheden worden met 5 of 2 keer verhoogd en verlaagd.
+Het verschil in snelheden geeft een duidelijke verandering aan in de grafieken van 
+figuur \@ref(fig:differentCort). Bij het veranderen van de snelheid van het binden
+aan de receptor zijn duidelijk andere evenwichtstoestanden te zien. Als de snelheid
+verlaagd komen deze hoger uit en met verlagen het tegenovergestelde. Dit komt
+doordat er minder of juist meer receptor complexen in de celkern komen. Bij het
+veranderen van de snelheid van het ontbinden gebeurd juist het omgekeerde. Daar 
+blijven de corticosteroïden juist langer gebonden en zullen er bij een verlaging van
+de snelheid juist meer receptor complexen in de celkern komen. Respectievelijk
+geeft dit een hogere of lagere synthese van mRNA en dus meer receptors.
 
-```{r}
+```{r blockedSynthese}
+#| fig_cap = "Hier is het verloop van het model te zien als er geen synthese
+#| van het mRNA plaatsvind."
+
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
                 Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
                 D = 20 * 1000 * (1/ molar.mass))
@@ -392,33 +447,34 @@ ksr.0 <- as.data.frame(ode(y = state, times = times, func = model,
 plot.ksr.mRNA_R <- ggplot(data = output.normal, aes(x = time)) + 
   geom_line(aes(y = mRNA.R, color = "Normal")) +
   geom_line(data = ksr.0, aes(y = mRNA.R, color = "Ksr as 0")) +
-  scale_color_brewer("Kre",
+  scale_color_brewer("",
                      breaks = c("Normal", "Ksr as 0"),
                      palette = "Set1")
 
 plot.ksr.R <- ggplot(data = output.normal, aes(x = time)) + 
   geom_line(aes(y = R, color = "Normal")) +
   geom_line(data = ksr.0, aes(y = R, color = "Ksr as 0")) +
-  scale_color_brewer("Kre",
+  scale_color_brewer("",
                      breaks = c("Normal", "Ksr as 0"),
                      palette = "Set1")
 
 plot.ksr.dr <- ggplot(data = output.normal, aes(x = time)) + 
   geom_line(aes(y = dr, color = "Normal")) +
   geom_line(data = ksr.0, aes(y = dr, color = "Ksr as 0")) +
-  scale_color_brewer("Kre",
+  scale_color_brewer("",
                      breaks = c("Normal", "Ksr as 0"),
                      palette = "Set1")
 
 plot.ksr.drn <- ggplot(data = output.normal, aes(x = time)) + 
   geom_line(aes(y = drn, color = "Normal")) +
   geom_line(data = ksr.0, aes(y = drn, color = "Ksr as 0")) +
-  scale_color_brewer("Kre", 
+  scale_color_brewer("", 
                      breaks = c("Normal", "Ksr as 0"),
                      palette = "Set1")
 
 plot_grid(plot.ksr.mRNA_R, plot.ksr.R, plot.ksr.dr, plot.ksr.drn, labels = "AUTO")
 ```
+
 
 ```{r}
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
@@ -491,13 +547,13 @@ plot_grid(plot.ks_Rm.mRNA_R, plot.ks_Rm.R, plot.ks_Rm.dr, plot.ks_Rm.drn, labels
 - Always refer to and discuss your figures and tables in the text - they never stand alone.
 
 
-# Discussion and Conclusion
-## Discussion
+# Discussie en Conclusie
+## Discussie
 - Compare your results with what is expecting from the literature and discuss differences with them.
 - Discuss striking and surprising results.
 - Discuss weaknesses in your research and how they could be addressed.
 
-## General conclusion and perspective
+## Conclusie 
 Discuss what your goal was, what the end result is and how you could continue working from here.
 
 
