@@ -258,9 +258,10 @@ onderzoeksresultaten goed overeen te komen.
 
 ## Opdracht 2
 ```{r autoRegulation}
-#| fig.cap="Het verschil tussen het standaard model
-#|  en een model waar de regulatie van de glucocorticoid 
-#|  receptor is weggevallen."
+#| fig.cap="Het verschil tussen het standaard model 
+#| en een model waar de regulatie van de glucocorticoid 
+#| receptor is weggevallen."
+
 # Adjusted the model to reflect the assignments question.
 model_adjusted <- function(t, y, parms){
   with(as.list(c(y, parms)),{
@@ -301,8 +302,9 @@ Dit komt doordat de synthese van het mRNA gewoon doorgaat en niet word gestopt
 door een gebonden receptor. Hierdoor blijven er receptors gemaakt worden waar 
 MPL aan kan blijven binden. En zonder deze regulatie komt de dichtheid van MPL-rececptor 
 complexen op een hogere stabiele toestand uit dan met regulatie.
+
 ```{r steadyState}
-#| fig_cap = "De werking van het medicijn op de mRNA en receptor concentratie"
+#| fig.cap = "De werking van het medicijn op de mRNA en receptor concentratie"
 
 # Set start state to the base values.
 state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
@@ -331,10 +333,11 @@ steady.R <- ggplot(data = D.steady, aes(x = time)) +
 
 plot_grid(steady.mRNA, steady.R, labels = "AUTO")
 ```
+
 Verder word er nog naar het model gekeken als op een punt de concentratie van 
 het medicijn in een keer naar 0 gaat. Als punt is de evenwichtstoestand gekozen, 
 op deze manier is er ook een duidelijk verschil te zien tussen de fases. Er wordt
-gekeken naar de mRNA en receptor concentraties in figuur \@reg(fig:steadyState).
+gekeken naar de mRNA en receptor concentraties in figuur \@ref(fig:steadyState).
 Dit zijn respectievelijk grafiek A en B in de figuur. Zoals goed te zien is schieten
 deze waardes weer terug omhoog zodra de concentratie van het medicijn op 0 wordt 
 gezet. De reden hiervoor is dat er geen MPL-receptor complexen meer ontstaan die 
@@ -342,11 +345,12 @@ de synthese van mRNA stoppen. Hierdoor zullen de concentraties van de receptor
 en mRNA weer terug omhoog schieten.
 
 ```{r differentCort}
-#| fig_cap = "De werking van verschillende corticosteroïden"
+#| fig.cap = "De werking van verschillende corticosteroïden"
+
+# Reset parameters, start states and the time to base values.
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
                 Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
                 D = 20 * 1000 * (1/ molar.mass))
-
 state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
 times <- seq(0, 168, by = 1)
 
@@ -396,7 +400,7 @@ kon.R <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = R, color = "no
                      breaks = c("normal", "divided by 5", "divided by 2", "times 5", "times 2"),
                      palette = "Set1")
 
-plot_grid(kon.mRNA.R, kon.R, labels = "AUTO")
+#plot_grid(kon.mRNA.R, kon.R, labels = "AUTO")
 
 kre.mRNA.R <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = mRNA.R, color = "normal")) + 
   geom_line(data = kre.divided5, aes(y = mRNA.R, color = "divided by 5")) + 
@@ -416,8 +420,9 @@ kre.R <- ggplot(output.normal, aes(x = time)) + geom_line(aes(y = R, color = "no
                      breaks = c("normal", "divided by 5", "divided by 2", "times 5", "times 2"),
                      palette = "Set1")
 
-plot_grid(kre.mRNA.R, kre.R, labels = "AUTO")
+plot_grid(kon.mRNA.R, kon.R, kre.mRNA.R, kre.R, labels = "AUTO")
 ```
+
 In figuur \@ref(fig:differentCort) worden verschillende soorten corticosteroïden
 gebruikt voor de simulatie van het model. Dit wordt gedaan door de parameters k_on
 en k_re aan te passen. K_on is de snelheid van binden aan de receptor en k_re is het 
@@ -433,17 +438,21 @@ de snelheid juist meer receptor complexen in de celkern komen. Respectievelijk
 geeft dit een hogere of lagere synthese van mRNA en dus meer receptors.
 
 ```{r blockedSynthese}
-#| fig_cap = "Hier is het verloop van het model te zien als er geen synthese
+#| fig.cap = "Hier is het verloop van het model te zien als er geen synthese
 #| van het mRNA plaatsvind."
 
+# Reset parameters and start states to base values.
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
                 Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
                 D = 20 * 1000 * (1/ molar.mass))
+state <- c(mRNA.R = 4.74, R = 267, dr = 0, drn = 0)
 
+# Set ksr to 0 which stands for the stopped synthesis in the model and run it.
 parameters["ksr"] <- 0
 ksr.0 <- as.data.frame(ode(y = state, times = times, func = model, 
                                 parms = parameters))
 
+# Make all the graphs for every variable compared to the normal output
 plot.ksr.mRNA_R <- ggplot(data = output.normal, aes(x = time)) + 
   geom_line(aes(y = mRNA.R, color = "Normal")) +
   geom_line(data = ksr.0, aes(y = mRNA.R, color = "Ksr as 0")) +
@@ -472,15 +481,33 @@ plot.ksr.drn <- ggplot(data = output.normal, aes(x = time)) +
                      breaks = c("Normal", "Ksr as 0"),
                      palette = "Set1")
 
+# 
 plot_grid(plot.ksr.mRNA_R, plot.ksr.R, plot.ksr.dr, plot.ksr.drn, labels = "AUTO")
 ```
 
+Met figuur \@ref(fig:blockedSynthese) word het verloop van het model als er geen 
+synthese van mRNA plaats vind vergeleken met het normale verloop. In het begin
+lijken ze nog redelijk hetzelfde verloop te tonen wat voornamelijk zal komen
+door de meegegeven startwaardes aan het model. Naarmate het model dan verder loopt
+zullen er geen nieuwe receptors meer aangemaakt worden. Dit is ook te zien in 
+het figuur \@ref(fig:blockedSynthese) B te zien waarbij het aangepaste model
+uiteindelijk helemaal naar 0 gaat. Dit betekent dus dat er helemaal geen vrije 
+receptor meer in het cytosol zit. Hetzelfde geldt voor figuur \@ref(fig:blockedSynthese)
+C en D die laten zien dat het aantal MPL-receptor complexen helemaal naar 0 gaan.
+En ondertussen schiet het aantal mRNA weer helemaal terug naar de startwaarde 
+omdat er geen receptor complexen zijn die de transcriptie remmen. Zoals te zien 
+is in figuur \@ref(fig:blockedSynthese) A.
 
-```{r}
+```{r mRNAproduction}
+#| fig.cap = "Het vertragen of versnellen van de mRNA productie vergeleken
+#| het normaal."
+
+# Reset parameters to base value.
 parameters <- c(ks_Rm = 2.90, IC50_Rm = 26.2, kon = 0.00329, kT = 0.63, kre = 0.57, 
                 Rf = 0.49, kd_R = 0.0572, kd_Rm = 0.612, ksr = 3.22, 
                 D = 20 * 1000 * (1/ molar.mass))
 
+# Adjusting the speed of mRNA production with the ks_Rm and kd_Rm parameters.
 parameters["ks_Rm"] <- 2.9 / 5
 parameters["kd_Rm"] <- 2.9 / 5 / 4.74
 ksrm.divided5 <- as.data.frame(ode(y = state, times = times, func = model, 
@@ -541,6 +568,12 @@ plot.ks_Rm.drn <- ggplot(data = output.normal, aes(x = time)) +
 plot_grid(plot.ks_Rm.mRNA_R, plot.ks_Rm.R, plot.ks_Rm.dr, plot.ks_Rm.drn, labels = "AUTO")
 ```
 
+Als laatste is er gekeken of de snelheid van de mRNA productie nog enige invloed
+heeft op het model. En zoals te zien is in figuur \@ref(fig:mRNAproduction) heeft
+het eigenlijk weinig tot geen invloed. Alleen bij de hoeveelheid receptor mRNA is
+er een verschil te zien wat ook begrijpelijk is als de snelheid aagepast word. Dit
+is te zien in figuur \@ref(fig:mRNAproduction) A. 
+
 - Describe what can be seen in such way that it leads to an answer to your research questions
 - Give your figures a number and a descriptive title.
 - Provide correct axis labels (unit and quantity), legend and caption.
@@ -549,13 +582,34 @@ plot_grid(plot.ks_Rm.mRNA_R, plot.ks_Rm.R, plot.ks_Rm.dr, plot.ks_Rm.drn, labels
 
 # Discussie en Conclusie
 ## Discussie
+
+Het grootste verschil in de waardes van het model met de metingen van het fysieke
+onderzoek zijn het aantal meetpunten en het verloop van de metingen. Bij het model
+word elk punt natuurlijk nauwkeurig berekend en is er geen kans voor toeval. Bij
+biologische processen en het meten daarvan gaat natuurlijk niet alles even soepel
+wat ook goed te zien is in figuur \@reg(fig:opdracht1). De mediaan verspringt nogal
+eens tussen meetpunten, maar als daar doorheen wordt gekeken lijkt het wel redelijk
+gelijk aan het model. Er zijn verder ook geen verrassende metingen die in het oog 
+springen. Wel hadden er meer metingen kunnen plaatsvinden. In dit onderzoek zijn er
+elke 6 uur vier metingen gedaan bij de twee dosissen, als dit al gehalveerd kan
+worden naar 3 uur is er een betere vergelijking met het model te maken. Het model
+word namelijk voor elk uur berekend. 
+
 - Compare your results with what is expecting from the literature and discuss differences with them.
 - Discuss striking and surprising results.
 - Discuss weaknesses in your research and how they could be addressed.
 
 ## Conclusie 
-Discuss what your goal was, what the end result is and how you could continue working from here.
 
+Het doel van dit onderzoek was het vergelijken van het model met resultaten van 
+een fysiek experiment. Op deze manier is er gekeken of het model ook klopt en of 
+het geen verkeerde berekenen en dus waardes heeft. Hieruit is gebleken dat het 
+model klopt en het goed overeenkomt met de waardes uit het experiment. Verder zijn
+er nog verschillende aanpassingen aan het model gedaan om hiervan de werking te
+zien. Denk hierbij aan het aanpassen of compleet weghalen van sommige variabelen 
+of parameters. Bij een vervolg onderzoek zou er gekeken kunnen worden naar de 
+precisie van het model, of naar de werking met andere corticosteroïden en of het 
+daar ook mogelijk voor is om een model te maken.
 
 \begin{thebibliography}{9}
 
