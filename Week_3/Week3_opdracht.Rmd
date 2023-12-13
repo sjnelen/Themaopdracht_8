@@ -3,9 +3,13 @@ title: "Week 3 thema 8"
 author: "Sam Nelen"
 date: "`r Sys.Date()`"
 
+documentclass: report
+geometry:
+  - margin=1in
 header-includes:
    - \usepackage{longtable}
    - \usepackage{hyperref}
+   - \usepackage[dutch]{babel}
 output:
     bookdown::pdf_document2:
 linkcolor: blue
@@ -49,10 +53,6 @@ De verwachting zal zijn dat het model in grote lijnen overeen zal komen met het
 experiment. Bij het experiment is er natuurlijk altijd een mogelijkheid op uitschieters
 en meetfouten. Hierdoor kan het zijn dat op sommige punten de waardes niet overeen
 komen.
-
-  - Describe Goal (not the educational goal but the research goal)
-  - Describe how you reach the goal (e.g. make model and figures, use different setting)
-  - formulate hypothesis
 
 ## Theorie
 
@@ -115,8 +115,6 @@ functie worden alle parameters, de startwaarde en de looptijd meegegeven. Op dez
 manier worden de verschillende waardes op een bepaald tijdpunt berekend en is er in
 dit geval een biologisch proces gemodelleerd.
 
-- Describe the software tools used, as well as the libraries
-- Describe the software implementation (note: code below is an example)
 ```{r}
 model <- function(t, y, parms){
   with(as.list(c(y, parms)),{
@@ -146,9 +144,6 @@ output.normal <- as.data.frame(ode(y = state, times = times, func = model,
 ```
 
 ## Model configuratie
-
-Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
-
 De verschillende parameters en variabelen zijn op basis van een aantal experimenten 
 met methylprednisolon in ratten bepaald. Deze parameters en variabelen zijn hieronder
 in tabel 1 en 2 te zien. De variabelen worden als startwaarden meegegeven aan het model.
@@ -186,7 +181,6 @@ $DR(N)$              & 0                & fmol/mg protein                       
 
 
 # Resultaten
-Introduction of results, how does it answer your research questions.
 
 ## Opdracht 1
 ```{r opdracht1}
@@ -438,7 +432,7 @@ de snelheid juist meer receptor complexen in de celkern komen. Respectievelijk
 geeft dit een hogere of lagere synthese van mRNA en dus meer receptors.
 
 ```{r blockedSynthese}
-#| fig.cap = "Hier is het verloop van het model te zien als er geen synthese
+#| fig.cap = "Hier is het verloop van het model te zien als er geen synthese 
 #| van het mRNA plaatsvind."
 
 # Reset parameters and start states to base values.
@@ -499,7 +493,7 @@ omdat er geen receptor complexen zijn die de transcriptie remmen. Zoals te zien
 is in figuur \@ref(fig:blockedSynthese) A.
 
 ```{r mRNAproduction}
-#| fig.cap = "Het vertragen of versnellen van de mRNA productie vergeleken
+#| fig.cap = "Het vertragen of versnellen van de mRNA productie vergeleken 
 #| het normaal."
 
 # Reset parameters to base value.
@@ -574,12 +568,6 @@ het eigenlijk weinig tot geen invloed. Alleen bij de hoeveelheid receptor mRNA i
 er een verschil te zien wat ook begrijpelijk is als de snelheid aagepast word. Dit
 is te zien in figuur \@ref(fig:mRNAproduction) A. 
 
-- Describe what can be seen in such way that it leads to an answer to your research questions
-- Give your figures a number and a descriptive title.
-- Provide correct axis labels (unit and quantity), legend and caption.
-- Always refer to and discuss your figures and tables in the text - they never stand alone.
-
-
 # Discussie en Conclusie
 ## Discussie
 
@@ -587,17 +575,13 @@ Het grootste verschil in de waardes van het model met de metingen van het fysiek
 onderzoek zijn het aantal meetpunten en het verloop van de metingen. Bij het model
 word elk punt natuurlijk nauwkeurig berekend en is er geen kans voor toeval. Bij
 biologische processen en het meten daarvan gaat natuurlijk niet alles even soepel
-wat ook goed te zien is in figuur \@reg(fig:opdracht1). De mediaan verspringt nogal
+wat ook goed te zien is in figuur \@ref(fig:opdracht1). De mediaan verspringt nogal
 eens tussen meetpunten, maar als daar doorheen wordt gekeken lijkt het wel redelijk
 gelijk aan het model. Er zijn verder ook geen verrassende metingen die in het oog 
 springen. Wel hadden er meer metingen kunnen plaatsvinden. In dit onderzoek zijn er
 elke 6 uur vier metingen gedaan bij de twee dosissen, als dit al gehalveerd kan
 worden naar 3 uur is er een betere vergelijking met het model te maken. Het model
 word namelijk voor elk uur berekend. 
-
-- Compare your results with what is expecting from the literature and discuss differences with them.
-- Discuss striking and surprising results.
-- Discuss weaknesses in your research and how they could be addressed.
 
 ## Conclusie 
 
