@@ -86,11 +86,6 @@ for radius and rho is the density of the ball. V stands for the velocity relativ
 the surrounding air. For the model we will implement the velocity like the formula below.
 
 $$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
-Suppose the moment of inertia about the central axis of the football is I, the 
-initial rotational speed is, and the air resistance moment is proportional to the
-rotational angular velocity, then the rotational angular velocity of the football 
-at time t is satisfied\cite{Far19,Ata20}.
-
 
 When solving with the magnus the formula of the magnitude of the acceleration becomes 
 as follows.
@@ -115,6 +110,7 @@ $$ \frac{\delta a_{z}}{\delta t} = \frac{-k * V_{z} * V + \lambda_{z} - m * g}{m
 $$ \frac{\delta a_{x}}{\delta t} = \frac{-k * V_{x} * V + \lambda_{x} }{m} $$
 
 $$ \frac{\delta a_{y}}{\delta t} = \frac{-k * V_{y} * V + \lambda_{y}}{m} $$
+
 Describe each element and the transformations
 
 # Methods
@@ -208,6 +204,29 @@ model <- function(t, y, parms){
 ```
 
 ## Model configuration
+
+| Variable/Parameter | Description                                        | Value/Formula                                      |
+|--------------------|----------------------------------------------------|----------------------------------------------------|
+| r                  | Radius of the football                             | 0.11                                               |
+| rho                | Air density                                        | 1.29                                               |
+| cw                 | Drag coefficient of the football                   | 0.5                                                |
+| cm                 | Another coefficient                                | 1                                                  |
+| m                  | Mass of the football                               | 0.445                                              |
+| k                  | Drag force coefficient                             | $\frac{1}{2} \cdot cw \cdot \rho \cdot (\pi \cdot r^2)$ |
+| mu                 | Friction coefficient                               | 0.1                                                |
+| g                  | Gravitational acceleration                         | 9.81                                               |
+| km                 | Another coefficient                                | $cm \cdot 8 \cdot \rho \cdot r^3$                 |
+| f                  | Some constant                                      | 10                                                 |
+| lambda             | Another constant                                   | $\frac{8}{3} \pi \cdot r^3$                       |
+| e                  | Euler's number                                     | $e \approx 2.71828$                                |
+| v                  | Initial velocity of the football                   | 30                                                 |
+| angle.z            | Initial angle of the football's trajectory (z-axis) | 25 degrees                                        |
+| angle.y            | Initial angle of the football's trajectory (y-axis) | 30 degrees                                        |
+| angle.x            | Initial angle of the football's trajectory (x-axis) | 7 degrees                                         |
+| state_straight     | Initial state of the football                      | See code                                           |
+| times              | Time steps                                         | 0 to 10 with step size 0.01                        |
+
+
 Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
 
 # Results
@@ -283,11 +302,6 @@ Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving differential
 Che,Y., Abo Keir,M.(2022).Study on the training model of football movement trajectory drop point based on fractional differential equation. Applied Mathematics and Nonlinear Sciences,7(1) 425-430. https://doi.org/10.2478/amns.2021.2.00095
 
 
-\bibitem{Far19}
-Düşünceli, Faruk. (2019). New Exact Solutions for Generalized (3+1) Shallow Water-Like (SWL) Equation. Applied Mathematics and Nonlinear Sciences. 4. 365-370. 10.2478/AMNS.2019.2.00031. 
-
-\bibitem{Ata20}
-Ata, Enes and Kıymaz, İ. Onur. "A study on certain properties of generalized special functions defined by Fox-Wright function" Applied Mathematics and Nonlinear Sciences, vol.5, no.1, 2020, pp.147-162. https://doi.org/10.2478/amns.2020.1.00014
 
 \end{thebibliography}
 
