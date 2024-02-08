@@ -3,13 +3,13 @@ title: "Eindopdracht"
 author: "Muniru & Sam"
 date: '2022-06-03'
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: 2
   html_document:
     toc: yes
     toc_depth: '2'
     df_print: paged
+  pdf_document:
+    toc: yes
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -82,31 +82,64 @@ plane.
 Give an explanation of the model with citations of source \cite{Soertaert10} (replace this with actual source)
 and formula explanation
 
-### Velocity
 
-$$ V = \sqrt{velocity.x^2 + velocity.y^2 + velocity.z^2} $$
-### Magnus Force
 
-#### Lambda 
-$$ \lambda.z <- \lambda * (\omega.y*V.x- \omega.x * V.y) * e^-\mu $$
+There are multiple forces that are interaction with the ball when u kick it. Things like gravity, acceleration and air resistance. But since the ball has a spin the magnus force comes in to play aswell. This force deflects the ball in flight \cite{Che21}. The formula for the magnitude of this acceleration is the following.
+$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \overrightarrow{\omega} \times \overrightarrow{V}$$
+The omega is the spin on the ball when kicked aka the angular velocity.  The r stands for radius and rho is the density of the ball. V stands for the velocity relative to the surrounding air. For the model we will implement the velocity like the formula below.
 
-$$ \lambda.x <- \lambda * (\omega.y*V.z- \omega.z * V.y) * e^-\mu$$
-$$ \lambda.y <- \lambda * (\omega.y*V.z- \omega.z * V.x) * e^-\mu $$
-#### Acceleration
+$$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
+Suppose the moment of inertia about the
+central axis of the football is I, the initial rotational speed is, and the air resistance moment is proportional to the
+rotational angular velocity, then the rotational angular velocity of the football at time t is satisfied\cite{Far19,Ata20}.
 
-$$ az = \frac{-k * V.z * V + \lambda.z - m * g}{m} $$
 
-$$ ax = \frac{-k * V.x * V + \lambda.x }{m} $$
+When solving with the magnus the formula of the magnitude of the acceleration becomes as follows.
+$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \begin{vmatrix} \overrightarrow{i} & \overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ V_{x} & V_{y} & V_{z} \end{vmatrix} $$
 
-$$ ay = \frac{-k * V.y * V + \lambda.y}{m} $$
+
+### Magnus force 
+$$ \frac{\delta\lambda_{z}}{\delta t} = \lambda * (\omega_{y}*V_{x}- \omega_{x} * V_{y}) * e^-\mu $$
+
+$$ \frac{\delta\lambda_{x}}{\delta t} = \lambda * (\omega_{y}*V_{z}- \omega_{z} * V_{y}) * e^-\mu$$
+
+$$ \frac{\delta \lambda_{y}}{\delta t} = \lambda * (\omega_{y}*V_{z}- \omega_{z} * V_{x}) * e^-\mu $$
+
+### Acceleration
+
+ $$ k =\frac{8}{3} \pi \rho r^3$$
+
+$$ \frac{\delta a_{z}}{\delta t} = \frac{-k * V_{z} * V + \lambda_{z} - m * g}{m} $$
+
+$$ \frac{\delta a_{x}}{\delta t} = \frac{-k * V_{x} * V + \lambda_{x} }{m} $$
+
+$$ \frac{\delta a_{y}}{\delta t} = \frac{-k * V_{y} * V + \lambda_{y}}{m} $$
 Describe each element and the transformations
 
 # Methods
 
 ## The software model
 
-- Describe the software tools used, as well as the libraries
-- Describe the software implementation
+- Describe the software tools used, as well as the libraries.
+
+R 4.3.2
+
+deSolve 1.40
+The deSolve package provides a set of functions for solving ordinary differential equations (ODEs) and partial differential equations (PDEs) in R. It is commonly used in fields such as biology, chemistry, physics, and engineering to model and simulate dynamic systems.
+
+Pracma 2.4.4
+This package provides R implementations of more advanced functions in numerical analysis, with
+a special view on on optimization and time series routines. Uses Matlab/Octave function names
+where appropriate to simplify porting.
+Some of these implementations are the result of courses on Scientific Computing (“Wissenschaftliches
+Rechnen”) and are mostly intended to demonstrate how to implement certain algorithms in R/S.
+Others are implementations of algorithms found in textbooks.
+
+Plotly 4.10.3
+Plotly's R graphing library makes interactive, publication-quality graphs. Examples of how to make line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, multiple-axes, and 3D (WebGL based) charts.
+
+- Describe the software implementation.
+
 ```{r}
 # variables & parameters
 r <- 0.11
@@ -142,7 +175,7 @@ model <- function(t, y, parms){
     angular <- c(angular.x, angular.y, angular.z)
     
     # Model for acceleration
-    V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2)
+    V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) 
     
     # Magnus force
     lambda.z <- lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
@@ -150,9 +183,9 @@ model <- function(t, y, parms){
     lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
 
 
-    az <- (-k * velocity.z * V + lambda.z - m * g) / m
-    ax <- (-k * velocity.x * V + lambda.x) / m
-    ay <- (-k * velocity.y * V  + lambda.y) / m
+    az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu - m * g) / m
+    ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu) / m
+    ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu) / m
 
     acc <- c(ax, ay, az)
     return(list(c(acc, velocity, angular)))
@@ -164,15 +197,6 @@ model <- function(t, y, parms){
 ## Model configuration
 
 Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
-\begin{longtable}[l]{l|l|l}
-\caption{Parameter Values} \\ \hline
-\label{param_table}
-$\textbf{Parameter}$             &$\textbf{Value}$& $\textbf{Unit}$              \\ \hline
-\endhead
-$a$       & 0.08  & $hour^{-1}$         \\ \hline
-$b$       & 0.06  & $hour^{-1}$         \\ \hline
-$c$       & 0.06  & $hour^{-1}$         \\ \hline
-\end{longtable}
 
 # Results
 Introduction of results, how does it answer your research questions.
@@ -242,4 +266,16 @@ Discuss what your goal was, what the end result is and how you could continue wo
 \bibitem{Soertaert10}
 Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving differential equations in R: package deSolve}, J. Stat. Softw., 33, 1-25, 2010.
 
+
+\bibitem{Che21}
+Che,Y., Abo Keir,M.(2022).Study on the training model of football movement trajectory drop point based on fractional differential equation. Applied Mathematics and Nonlinear Sciences,7(1) 425-430. https://doi.org/10.2478/amns.2021.2.00095
+
+
+\bibitem{Far19}
+Düşünceli, Faruk. (2019). New Exact Solutions for Generalized (3+1) Shallow Water-Like (SWL) Equation. Applied Mathematics and Nonlinear Sciences. 4. 365-370. 10.2478/AMNS.2019.2.00031. 
+
+\bibitem{Ata20}
+Ata, Enes and Kıymaz, İ. Onur. "A study on certain properties of generalized special functions defined by Fox-Wright function" Applied Mathematics and Nonlinear Sciences, vol.5, no.1, 2020, pp.147-162. https://doi.org/10.2478/amns.2020.1.00014
+
 \end{thebibliography}
+
