@@ -1,0 +1,245 @@
+---
+title: "Eindopdracht"
+author: "Muniru & Sam"
+date: '2022-06-03'
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 2
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=T}
+if (!require("deSolve", quietly = TRUE))
+    install.packages("deSolve")
+if (!require("pracma", quietly = TRUE))
+    install.packages("pracma")
+if (!require("plotly", quietly = TRUE))
+    install.packages("plotly")
+
+# Load packages
+library(deSolve)
+library(pracma)
+library(plotly)
+```
+
+# Introduction
+Introduction of the research and introduction research questions
+
+Ever heard of the game FIFA by EA? It is the most popular football game in the world
+played by millions. So to get the correct trajectory for the ball is one of the most
+important aspects of the game. If the trajectory is not realistic it wouldn't be as
+good of a game as it is now. One of the ways to get the correct trajectory is calculating 
+it using a model with different forces acting on the ball. Think of things like speed, 
+the gravity and air resistance. With these forces the trajectory of all kind of things
+can be calculated if the correct parameters are chosen. But not every object has the
+same forces acting on them. So in this report the trajectory of a football is chosen
+to look at and model.
+
+## Goal
+  - Describe Goal (not the educational goal but the research goal)
+  - Describe how you reach the goal (e.g. make model and figures, use different setting)
+  - formulate hypothesis
+  
+As you might have guessed the goal is to model the trajectory of a football that is 
+kicked by someone. This is done by calculating the different forces at play on any 
+given moment. The forces chosen to model are velocity, acceleration and the Magnus 
+force. With these three the ball's position can be calculated for any given moment.
+The formulas for these three will be explained further in the theory section. 
+In the results a few different starting parameters will be used to showcase different
+paths of the ball. The expectation is that this model will show a realistic path for a 
+football.
+
+## Theory
+
+- Describe the model
+- Picture of the model
+
+To understand this model a little knowledge about basic physics can be useful, but 
+here is a small explanation about the forces. So everywhere around you are different
+forces at play. The most easy to understand is the air resistance experienced with
+most outside activities like running, cycling and even walking. For example with 
+running you have to use energy to move forward, this is translated to force by 
+your muscles. While moving you push the air out of the way and to do so the force 
+you generate must be higher than the air resistance. If it is windy outside it takes 
+more energy to move the same distance because the air exerts a higher force on you.
+So lets take a look at al the forces on a football. Air resistance is one of them
+of course, but also gravity and the Magnus force. All the forces on the ball are
+combined in different formulas. Velocity, Acceleration and a formula for the Magnus
+force. These three are split in a X-, Y-, Z-axis to calculate the forces in a 3D
+plane. 
+
+```{r, echo=FALSE, out.width='95%'}
+#knitr::include_graphics('example.png')
+```
+Give an explanation of the model with citations of source \cite{Soertaert10} (replace this with actual source)
+and formula explanation
+
+### Velocity
+
+$$ V = \sqrt{velocity.x^2 + velocity.y^2 + velocity.z^2} $$
+### Magnus Force
+
+#### Lambda 
+$$ \lambda.z <- \lambda * (\omega.y*V.x- \omega.x * V.y) * e^-\mu $$
+
+$$ \lambda.x <- \lambda * (\omega.y*V.z- \omega.z * V.y) * e^-\mu$$
+$$ \lambda.y <- \lambda * (\omega.y*V.z- \omega.z * V.x) * e^-\mu $$
+#### Acceleration
+
+$$ az = \frac{-k * V.z * V + \lambda.z - m * g}{m} $$
+
+$$ ax = \frac{-k * V.x * V + \lambda.x }{m} $$
+
+$$ ay = \frac{-k * V.y * V + \lambda.y}{m} $$
+Describe each element and the transformations
+
+# Methods
+
+## The software model
+
+- Describe the software tools used, as well as the libraries
+- Describe the software implementation
+```{r}
+# variables & parameters
+r <- 0.11
+rho <- 1.29
+cw <- 0.5
+cm <- 1
+parameters <- c(m = 0.445, k = (1/2) * cw * rho * (pi * r^2),
+                mu = 0.1, g = 9.81, km = cm * 8 * rho * r^3, f = 10,
+                lambda =  8/3*pi*r^3, e = exp(1))
+
+# state of start
+v <- 30
+angle.z <- 25
+angle.y <- 30
+angle.x <- 7
+state_straight <- c(velocity = c(x =6,
+                                 y = 37.5,
+                                 z = 11.5),
+                    position = c(x = 0, y = 0, z = 0),
+                    angular = c(x = 2,
+                                y = -2,
+                                z = 14))
+
+# time steps
+times <- seq(0, 10, by = 0.01)
+
+# model
+model <- function(t, y, parms){
+  with(as.list(c(y, parms)), {
+    # velocity & positioning
+    velocity <- c(velocity.x, velocity.y, velocity.z)
+    position <- c(position.x, position.y, position.z)
+    angular <- c(angular.x, angular.y, angular.z)
+    
+    # Model for acceleration
+    V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2)
+    
+    # Magnus force
+    lambda.z <- lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
+    lambda.x <- lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
+    lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
+
+
+    az <- (-k * velocity.z * V + lambda.z - m * g) / m
+    ax <- (-k * velocity.x * V + lambda.x) / m
+    ay <- (-k * velocity.y * V  + lambda.y) / m
+
+    acc <- c(ax, ay, az)
+    return(list(c(acc, velocity, angular)))
+  }
+  )
+}
+```
+
+## Model configuration
+
+Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
+\begin{longtable}[l]{l|l|l}
+\caption{Parameter Values} \\ \hline
+\label{param_table}
+$\textbf{Parameter}$             &$\textbf{Value}$& $\textbf{Unit}$              \\ \hline
+\endhead
+$a$       & 0.08  & $hour^{-1}$         \\ \hline
+$b$       & 0.06  & $hour^{-1}$         \\ \hline
+$c$       & 0.06  & $hour^{-1}$         \\ \hline
+\end{longtable}
+
+# Results
+Introduction of results, how does it answer your research questions.
+```{r, include=T}
+# performing simulation
+out <- as.data.frame(ode(times = times,
+                         y = state_straight,
+                         parms = parameters,
+                         func = model))
+
+# filtering results
+output <- subset(out, position.z >= 0)
+
+# 2 dimensional fig of trajectory
+plot(output$position.y,
+     output$position.z,
+     type = "l",
+     ylab = "Height in m",
+     xlab = "Length in m",
+     main = "Trajectory")
+
+# dimensional representation
+fig <- plot_ly(output,
+               x = ~position.x,
+               y = ~position.y,
+               z = ~position.z,
+               type = 'scatter3d',
+               mode = 'lines',
+               opacity = 1)
+
+
+# adding goal
+goal <- data.frame(x = c(-3.66,-3.66,3.66,3.66),  
+                        y = c(30,30,30,30),
+                        z = c(0,2.44,2.44,0))
+
+fig <- fig %>% add_trace(data = goal,
+                         x = ~x,
+                         y = ~y,
+                         z = ~z,
+                         mode = "lines",
+                         name = "Goal")
+
+# resizing plot
+ratio <- max(output$position.z) / max(output$position.y)
+fig <- fig %>% layout(scene = list(aspectratio = list(x = 1, y = 1, z = .4)))
+
+fig
+```
+
+- Describe what can be seen in such way that it leads to an answer to your research questions
+- Give your figures a number and a descriptive title.
+- Provide correct axis labels (unit and quantity), legend and caption.
+- Always refer to and discuss your figures and tables in the text - they never stand alone.
+
+# Discussion and Conclusion
+## Discussion
+- Compare your results with what is expecting from the literature and discuss differences with them.
+- Discuss striking and surprising results.
+- Discuss weaknesses in your research and how they could be addressed.
+
+## General conclusion and perspective
+Discuss what your goal was, what the end result is and how you could continue working from here.
+
+\begin{thebibliography}{9}
+
+\bibitem{Soertaert10}
+Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving differential equations in R: package deSolve}, J. Stat. Softw., 33, 1-25, 2010.
+
+\end{thebibliography}
