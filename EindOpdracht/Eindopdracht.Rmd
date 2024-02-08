@@ -17,17 +17,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, include=T}
-if (!require("deSolve", quietly = TRUE))
-    install.packages("deSolve")
-if (!require("pracma", quietly = TRUE))
-    install.packages("pracma")
-if (!require("plotly", quietly = TRUE))
-    install.packages("plotly")
-
-# Load packages
-library(deSolve)
-library(pracma)
-library(plotly)
+# Loading the packages with the pacman library
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(deSolve, pracma, plotly)
 ```
 
 # Introduction
@@ -77,25 +69,34 @@ force. These three are split in a X-, Y-, Z-axis to calculate the forces in a 3D
 plane. 
 
 ```{r, echo=FALSE, out.width='95%'}
-#knitr::include_graphics('example.png')
+knitr::include_graphics('../images/forcesFootball.jpg')
 ```
-Give an explanation of the model with citations of source \cite{Soertaert10} (replace this with actual source)
-and formula explanation
+Give an explanation of the model with citations of source \cite{Soertaert10} 
+(replace this with actual source) and formula explanation
 
 
 
-There are multiple forces that are interaction with the ball when u kick it. Things like gravity, acceleration and air resistance. But since the ball has a spin the magnus force comes in to play aswell. This force deflects the ball in flight \cite{Che21}. The formula for the magnitude of this acceleration is the following.
+There are multiple forces that are interaction with the ball when u kick it. Things 
+like gravity, acceleration and air resistance. But since the ball has a spin the magnus 
+force comes in to play aswell. This force deflects the ball in flight \cite{Che21}. 
+The formula for the magnitude of this acceleration is the following.
 $$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \overrightarrow{\omega} \times \overrightarrow{V}$$
-The omega is the spin on the ball when kicked aka the angular velocity.  The r stands for radius and rho is the density of the ball. V stands for the velocity relative to the surrounding air. For the model we will implement the velocity like the formula below.
+The omega is the spin on the ball when kicked aka the angular velocity. The r stands 
+for radius and rho is the density of the ball. V stands for the velocity relative to 
+the surrounding air. For the model we will implement the velocity like the formula below.
 
 $$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
-Suppose the moment of inertia about the
-central axis of the football is I, the initial rotational speed is, and the air resistance moment is proportional to the
-rotational angular velocity, then the rotational angular velocity of the football at time t is satisfied\cite{Far19,Ata20}.
+Suppose the moment of inertia about the central axis of the football is I, the 
+initial rotational speed is, and the air resistance moment is proportional to the
+rotational angular velocity, then the rotational angular velocity of the football 
+at time t is satisfied\cite{Far19,Ata20}.
 
 
-When solving with the magnus the formula of the magnitude of the acceleration becomes as follows.
-$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \begin{vmatrix} \overrightarrow{i} & \overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ V_{x} & V_{y} & V_{z} \end{vmatrix} $$
+When solving with the magnus the formula of the magnitude of the acceleration becomes 
+as follows.
+$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \begin{vmatrix} \overrightarrow{i} & 
+\overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ V_{x} & 
+V_{y} & V_{z} \end{vmatrix} $$
 
 
 ### Magnus force 
@@ -139,6 +140,18 @@ Plotly 4.10.3
 Plotly's R graphing library makes interactive, publication-quality graphs. Examples of how to make line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, multiple-axes, and 3D (WebGL based) charts.
 
 - Describe the software implementation.
+
+## Model configuration
+Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
+\begin{longtable}[l]{l|l|l|l}
+\caption{Parameter Values} \\ \hline
+\label{param_table}
+$\textbf{Parameter}$ & $\textbf{Value}$ & $\textbf{Unit}$ & $\textbf{Description}$    \\ \hline
+\endhead
+$a$       & 0.08  & $hour^{-1}$         \\ \hline
+$b$       & 0.06  & $hour^{-1}$         \\ \hline
+$c$       & 0.06  & $hour^{-1}$         \\ \hline
+\end{longtable}
 
 ```{r}
 # variables & parameters
@@ -195,7 +208,6 @@ model <- function(t, y, parms){
 ```
 
 ## Model configuration
-
 Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
 
 # Results
