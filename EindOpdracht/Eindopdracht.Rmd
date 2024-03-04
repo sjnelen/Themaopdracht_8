@@ -10,6 +10,9 @@ output:
     toc: yes
     toc_depth: '2'
     df_print: paged
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -23,133 +26,185 @@ pacman::p_load(deSolve, pracma, plotly)
 ```
 
 # Introduction
+
 Introduction of the research and introduction research questions
 
-Ever heard of the game FIFA by EA? It is the most popular football game in the world
-played by millions. So to get the correct trajectory for the ball is one of the most
-important aspects of the game. If the trajectory is not realistic it wouldn't be as
-good of a game as it is now. One of the ways to get the correct trajectory is calculating 
-it using a model with different forces acting on the ball. Think of things like speed, 
-the gravity and air resistance. With these forces the trajectory of all kind of things
-can be calculated if the correct parameters are chosen. But not every object has the
-same forces acting on them. So in this report the trajectory of a football is chosen
-to look at and model.
+Ever heard of the game FIFA by EA? It is the most popular football game
+in the world played by millions. So to get the correct trajectory for
+the ball is one of the most important aspects of the game. If the
+trajectory is not realistic it wouldn't be as good of a game as it is
+now. One of the ways to get the correct trajectory is calculating it
+using a model with different forces acting on the ball. Think of things
+like speed, the gravity and air resistance. With these forces the
+trajectory of all kind of things can be calculated if the correct
+parameters are chosen. But not every object has the same forces acting
+on them. So in this report the trajectory of a football is chosen to
+look at and model.
 
 ## Goal
-  - Describe Goal (not the educational goal but the research goal)
-  - Describe how you reach the goal (e.g. make model and figures, use different setting)
-  - formulate hypothesis
-  
-As you might have guessed the goal is to model the trajectory of a football that is 
-kicked by someone. This is done by calculating the different forces at play on any 
-given moment. The forces chosen to model are velocity, acceleration and the Magnus 
-force. With these three the ball's position can be calculated for any given moment.
-The formulas for these three will be explained further in the theory section. 
-In the results a few different starting parameters will be used to showcase different
-paths of the ball. The expectation is that this model will show a realistic path for a 
-football.
+
+-   Describe Goal (not the educational goal but the research goal)
+-   Describe how you reach the goal (e.g. make model and figures, use
+    different setting)
+-   formulate hypothesis
+
+As you might have guessed the goal is to model the trajectory of a
+football that is kicked by someone. This is done by calculating the
+different forces at play on any given moment. The forces chosen to model
+are velocity, acceleration and the Magnus force. With these three the
+ball's position can be calculated for any given moment. The formulas for
+these three will be explained further in the theory section. In the
+results a few different starting parameters will be used to showcase
+different paths of the ball. The expectation is that this model will
+show a realistic path for a football.
 
 ## Theory
 
-- Describe the model
-- Picture of the model
+-   Describe the model
+-   Picture of the model
 
-To understand this model a little knowledge about basic physics can be useful, but 
-here is a small explanation about the forces. So everywhere around you are different
-forces at play. The most easy to understand is the air resistance experienced with
-most outside activities like running, cycling and even walking. For example with 
-running you have to use energy to move forward, this is translated to force by 
-your muscles. While moving you push the air out of the way and to do so the force 
-you generate must be higher than the air resistance. If it is windy outside it takes 
-more energy to move the same distance because the air exerts a higher force on you.
-So lets take a look at al the forces on a football. Air resistance is one of them
-of course, but also gravity and the Magnus force. All the forces on the ball are
-combined in different formulas. Velocity, Acceleration and a formula for the Magnus
-force. These three are split in a X-, Y-, Z-axis to calculate the forces in a 3D
-plane. 
+To understand this model a little knowledge about basic physics can be
+useful, here is a small explanation about the forces. So everywhere
+around you there are different forces at play. One of the important
+forces is is the air resistance experienced with most outside activities
+like running, cycling and even walking. For example with running you
+have to use energy to move forward, this is translated to force by your
+muscles. While moving you push the air out of the way and to do so the
+force you generate must be higher than the air resistance. If it is
+windy outside it takes more energy to move the same distance because the
+air exerts a higher force on you. So lets take a look at al the forces
+on a football. Air resistance is one of them of course, but also gravity
+and the Magnus force. All the forces on the ball are combined in
+different formulas. Velocity, Acceleration and a formula for the Magnus
+force. These three are split in a X-, Y-, Z-axis to calculate the forces
+in a 3D plane.
 
-```{r, echo=FALSE, out.width='95%'}
+```{r ball picture, echo=FALSE, out.width='95%'}
 knitr::include_graphics('../images/forcesFootball.jpg')
 ```
-Give an explanation of the model with citations of source \cite{Soertaert10} 
-(replace this with actual source) and formula explanation
 
+### Magnus Force Implimentation
 
+There are multiple forces that are interaction with the ball when u kick
+it. Things like gravity, acceleration and air resistance. But since the
+ball has a spin the magnus force comes in to play as well. This force
+deflects the ball in flight \cite{Che21}. The formula for the magnitude
+of the acceleration created by magnus force is the following.
 
-There are multiple forces that are interaction with the ball when u kick it. Things 
-like gravity, acceleration and air resistance. But since the ball has a spin the magnus 
-force comes in to play aswell. This force deflects the ball in flight \cite{Che21}. 
-The formula for the magnitude of this acceleration is the following.
-$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \overrightarrow{\omega} \times \overrightarrow{V}$$
-The omega is the spin on the ball when kicked aka the angular velocity. The r stands 
-for radius and rho is the density of the ball. V stands for the velocity relative to 
-the surrounding air. For the model we will implement the velocity like the formula below.
+$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3\cdot\overrightarrow{\omega} \cdot \overrightarrow{V}$$
 
-$$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
+The constant:
 
-When solving with the magnus the formula of the magnitude of the acceleration becomes 
-as follows.
-$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \begin{vmatrix} \overrightarrow{i} & 
+$$ \lambda = \frac{8}{3} \pi \rho r^3 $$
+
+Equals:
+
+$$ \overrightarrow{f} = \lambda \cdot  \begin{vmatrix} \overrightarrow{i} & 
 \overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ V_{x} & 
 V_{y} & V_{z} \end{vmatrix} $$
 
+The $\omega$ is the spin on the ball when kicked aka the angular
+velocity. The $r$ stands for radius and $\rho$ is the density of the
+ball. $V$ stands for the velocity relative to the surrounding air. In
+the model we will implement the velocity for the general displacement of
+the ball in like the formula below.
 
-### Magnus force 
-$$ \frac{\delta\lambda_{z}}{\delta t} = \lambda * (\omega_{y}*V_{x}- \omega_{x} * V_{y}) * e^-\mu $$
+$$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
+Now we solve the magnus displacement for each axis, first for
+x:$$ \frac{\delta\lambda_{x}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{z}- \omega_{z} \cdot V_{y}) \cdot e^-\mu $$
 
-$$ \frac{\delta\lambda_{x}}{\delta t} = \lambda * (\omega_{y}*V_{z}- \omega_{z} * V_{y}) * e^-\mu$$
+Now for
+y:$$ \frac{\delta \lambda_{y}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{z}- \omega_{z} \cdot V_{x}) \cdot e^-\mu $$
 
-$$ \frac{\delta \lambda_{y}}{\delta t} = \lambda * (\omega_{y}*V_{z}- \omega_{z} * V_{x}) * e^-\mu $$
+And for
+z:$$ \frac{\delta\lambda_{z}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{x}- \omega_{x} \cdot V_{y}) \cdot e^-\mu $$
 
 ### Acceleration
 
- $$ k =\frac{8}{3} \pi \rho r^3$$
+The speed of the ball slows down over time due to all acting forces on
+it. These forces are magnus force, air resistance and gravity. Now to
+add them all together. First for the vertical axis:
 
-$$ \frac{\delta a_{z}}{\delta t} = \frac{-k * V_{z} * V + \lambda_{z} - m * g}{m} $$
+$$ \frac{\delta a_{z}}{\delta t} = \frac{-k \cdot V_{z} \cdot V + \lambda_{z} - m \cdot g}{m} $$
 
-$$ \frac{\delta a_{x}}{\delta t} = \frac{-k * V_{x} * V + \lambda_{x} }{m} $$
+Here, $k$ represents the air resistance, $v_z$ the upward speed, $V$ is
+the total speed on the ball, $m$ is the total mass , $g$ is the force of
+gravity and $\lambda_z$ is the magnus.
 
-$$ \frac{\delta a_{y}}{\delta t} = \frac{-k * V_{y} * V + \lambda_{y}}{m} $$
+Second the horizantal axis:
 
-Describe each element and the transformations
+$$ \frac{\delta a_{x}}{\delta t} = \frac{-k \cdot V_{x} \cdot V + \lambda_{x} }{m} $$
+
+Here, $V_x$ is the horizontal speed and $\lambda_x$ is the horizontal
+magnus force.
+
+Third is the sideways
+direction:$$ \frac{\delta a_{y}}{\delta t} = \frac{-k \cdot V_{y} \cdot V + \lambda_{y}}{m} $$
+
+Here, $V_y$ is the sideways speed and $\lambda_y$ is the magnus force in
+the sideways direction.
 
 # Methods
 
 ## The software model
 
-- Describe the software tools used, as well as the libraries.
+-   Describe the software tools used, as well as the libraries.
 
 R 4.3.2
 
-deSolve 1.40
-The deSolve package provides a set of functions for solving ordinary differential equations (ODEs) and partial differential equations (PDEs) in R. It is commonly used in fields such as biology, chemistry, physics, and engineering to model and simulate dynamic systems.
+deSolve 1.40 The deSolve package provides a set of functions for solving
+ordinary differential equations (ODEs) and partial differential
+equations (PDEs) in R. It is commonly used in fields such as biology,
+chemistry, physics, and engineering to model and simulate dynamic
+systems.
 
-Pracma 2.4.4
-This package provides R implementations of more advanced functions in numerical analysis, with
-a special view on on optimization and time series routines. Uses Matlab/Octave function names
-where appropriate to simplify porting.
-Some of these implementations are the result of courses on Scientific Computing (“Wissenschaftliches
-Rechnen”) and are mostly intended to demonstrate how to implement certain algorithms in R/S.
-Others are implementations of algorithms found in textbooks.
+Pracma 2.4.4 This package provides R implementations of more advanced
+functions in numerical analysis, with a special view on on optimization
+and time series routines. Uses Matlab/Octave function names where
+appropriate to simplify porting. Some of these implementations are the
+result of courses on Scientific Computing (“Wissenschaftliches Rechnen”)
+and are mostly intended to demonstrate how to implement certain
+algorithms in R/S. Others are implementations of algorithms found in
+textbooks.
 
-Plotly 4.10.3
-Plotly's R graphing library makes interactive, publication-quality graphs. Examples of how to make line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, multiple-axes, and 3D (WebGL based) charts.
+Plotly 4.10.3 Plotly's R graphing library makes interactive,
+publication-quality graphs. Examples of how to make line plots, scatter
+plots, area charts, bar charts, error bars, box plots, histograms,
+heatmaps, subplots, multiple-axes, and 3D (WebGL based) charts.
 
-- Describe the software implementation.
+-   Describe the software implementation.
 
 ## Model configuration
-Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
-\begin{longtable}[l]{l|l|l}
-\caption{Parameter Values} \\ \hline
-\label{param_table}
-$\textbf{Parameter}$ & $\textbf{Value}$ & $\textbf{Unit}$ & $\textbf{Description}$    \\ \hline
-\endhead
-$a$       & 0.08  & $hour^{-1}$         \\ \hline
-$b$       & 0.06  & $hour^{-1}$         \\ \hline
-$c$       & 0.06  & $hour^{-1}$         \\ \hline
-\end{longtable}
 
-```{r}
+Explain chosen initial state, parameter values and time sequence. Use
+tables with values as for example below.
+
+| Variable/Parameter | Description                                         | Value/Formula                                           |
+|------------------|---------------------------|---------------------------|
+| r                  | Radius of the football                              | 0.11                                                    |
+| rho                | Air density                                         | 1.29                                                    |
+| cw                 | Drag coefficient of the football                    | 0.5                                                     |
+| cm                 | Another coefficient                                 | 1                                                       |
+| m                  | Mass of the football                                | 0.445                                                   |
+| k                  | Drag force coefficient                              | $\frac{1}{2} \cdot cw \cdot \rho \cdot (\pi \cdot r^2)$ |
+| mu                 | Friction coefficient                                | 0.1                                                     |
+| g                  | Gravitational acceleration                          | 9.81                                                    |
+| km                 | Another coefficient                                 | $cm \cdot 8 \cdot \rho \cdot r^3$                       |
+| f                  | Some constant                                       | 10                                                      |
+| lambda             | Magnus constant                                     | $\frac{8}{3} \pi \cdot r^3$                             |
+| e                  | Euler's number                                      | $e \approx 2.71828$                                     |
+| v                  | Initial velocity of the football                    | 30                                                      |
+| angle.z            | Initial angle of the football's trajectory (z-axis) | 25 degrees                                              |
+| angle.y            | Initial angle of the football's trajectory (y-axis) | 30 degrees                                              |
+| angle.x            | Initial angle of the football's trajectory (x-axis) | 7 degrees                                               |
+| state_straight     | Initial state of the football                       | See code                                                |
+| times              | Time steps                                          | 0 to 10 with step size 0.01                             |
+
+# Results
+
+Introduction of results, how does it answer your research questions.
+
+```{r parameters(echo=F), echo=FALSE}
 # variables & parameters
 r <- 0.11
 rho <- 1.29
@@ -203,35 +258,7 @@ model <- function(t, y, parms){
 }
 ```
 
-## Model configuration
-
-| Variable/Parameter | Description                                        | Value/Formula                                      |
-|--------------------|----------------------------------------------------|----------------------------------------------------|
-| r                  | Radius of the football                             | 0.11                                               |
-| rho                | Air density                                        | 1.29                                               |
-| cw                 | Drag coefficient of the football                   | 0.5                                                |
-| cm                 | Another coefficient                                | 1                                                  |
-| m                  | Mass of the football                               | 0.445                                              |
-| k                  | Drag force coefficient                             | $\frac{1}{2} \cdot cw \cdot \rho \cdot (\pi \cdot r^2)$ |
-| mu                 | Friction coefficient                               | 0.1                                                |
-| g                  | Gravitational acceleration                         | 9.81                                               |
-| km                 | Another coefficient                                | $cm \cdot 8 \cdot \rho \cdot r^3$                 |
-| f                  | Some constant                                      | 10                                                 |
-| lambda             | Another constant                                   | $\frac{8}{3} \pi \cdot r^3$                       |
-| e                  | Euler's number                                     | $e \approx 2.71828$                                |
-| v                  | Initial velocity of the football                   | 30                                                 |
-| angle.z            | Initial angle of the football's trajectory (z-axis) | 25 degrees                                        |
-| angle.y            | Initial angle of the football's trajectory (y-axis) | 30 degrees                                        |
-| angle.x            | Initial angle of the football's trajectory (x-axis) | 7 degrees                                         |
-| state_straight     | Initial state of the football                      | See code                                           |
-| times              | Time steps                                         | 0 to 10 with step size 0.01                        |
-
-
-Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
-
-# Results
-Introduction of results, how does it answer your research questions.
-```{r, include=T}
+```{r results, include=T}
 # performing simulation
 out <- as.data.frame(ode(times = times,
                          y = state_straight,
@@ -278,24 +305,32 @@ fig <- fig %>% layout(scene = list(aspectratio = list(x = 1, y = 1, z = .4)))
 #fig
 ```
 
-- Describe what can be seen in such way that it leads to an answer to your research questions
-- Give your figures a number and a descriptive title.
-- Provide correct axis labels (unit and quantity), legend and caption.
-- Always refer to and discuss your figures and tables in the text - they never stand alone.
+-   Describe what can be seen in such way that it leads to an answer to
+    your research questions
+-   Give your figures a number and a descriptive title.
+-   Provide correct axis labels (unit and quantity), legend and caption.
+-   Always refer to and discuss your figures and tables in the text -
+    they never stand alone.
 
 # Discussion and Conclusion
+
 ## Discussion
-- Compare your results with what is expecting from the literature and discuss differences with them.
-- Discuss striking and surprising results.
-- Discuss weaknesses in your research and how they could be addressed.
+
+-   Compare your results with what is expecting from the literature and
+    discuss differences with them.
+-   Discuss striking and surprising results.
+-   Discuss weaknesses in your research and how they could be addressed.
 
 ## General conclusion and perspective
-Discuss what your goal was, what the end result is and how you could continue working from here.
 
+Discuss what your goal was, what the end result is and how you could
+continue working from here.
+
+```{=tex}
 \begin{thebibliography}{9}
 
 \bibitem{Soertaert10}
-Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving differential equations in R: package deSolve}, J. Stat. Softw., 33, 1-25, 2010.
+Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving  in R: package deSolve}, J. Stat. Softw., 33, 1-25, 2010.
 
 
 \bibitem{Che21}
@@ -304,4 +339,61 @@ Che,Y., Abo Keir,M.(2022).Study on the training model of football movement traje
 
 
 \end{thebibliography}
+```
+# Attachments
 
+```{r attachment 1}
+# variables & parameters
+r <- 0.11
+rho <- 1.29
+cw <- 0.5
+cm <- 1
+parameters <- c(m = 0.445, k = (1/2) * cw * rho * (pi * r^2),
+                mu = 0.1, g = 9.81, km = cm * 8 * rho * r^3, f = 10,
+                lambda =  8/3*pi*r^3, e = exp(1))
+
+# state of start
+v <- 30
+angle.z <- 25
+angle.y <- 30
+angle.x <- 7
+state_straight <- c(velocity = c(x =6,
+                                 y = 37.5,
+                                 z = 11.5),
+                    position = c(x = 0, y = 0, z = 0),
+                    angular = c(x = 2,
+                                y = -2,
+                                z = 14))
+
+# time steps
+times <- seq(0, 10, by = 0.01)
+
+# model
+model <- function(t, y, parms){
+  with(as.list(c(y, parms)), {
+    # velocity & positioning
+    velocity <- c(velocity.x, velocity.y, velocity.z)
+    position <- c(position.x, position.y, position.z)
+    angular <- c(angular.x, angular.y, angular.z)
+    
+    # Model for acceleration
+    V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) 
+    
+    # Magnus force
+    lambda.z <- lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
+    lambda.x <- lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
+    lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
+
+
+    az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu - m * g) / m
+    ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu) / m
+    ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu) / m
+
+    acc <- c(ax, ay, az)
+    return(list(c(acc, velocity, angular)))
+  }
+  )
+}
+```
+
+## 
