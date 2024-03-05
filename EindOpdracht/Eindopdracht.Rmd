@@ -6,10 +6,10 @@ output:
   pdf_document:
     toc: yes
     toc_depth: 2
-  html_document:
-    toc: yes
-    toc_depth: '2'
-    df_print: paged
+  #html_document:
+    #toc: yes
+    #toc_depth: '2'
+    #df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -71,14 +71,11 @@ plane.
 ```{r, echo=FALSE, out.width='95%'}
 knitr::include_graphics('../images/forcesFootball.jpg')
 ```
-Give an explanation of the model with citations of source \cite{Soertaert10} 
-(replace this with actual source) and formula explanation
 
 
-
-There are multiple forces that are interaction with the ball when u kick it. Things 
+There are multiple forces that are interacting with the ball when u kick it. Things 
 like gravity, acceleration and air resistance. But since the ball has a spin the magnus 
-force comes in to play aswell. This force deflects the ball in flight \cite{Che21}. 
+force comes in to play as well. This force deflects the ball in flight \cite{Che21}. 
 The formula for the magnitude of this acceleration is the following.
 $$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \overrightarrow{\omega} \times \overrightarrow{V}$$
 The omega is the spin on the ball when kicked aka the angular velocity. The r stands 
@@ -87,7 +84,7 @@ the surrounding air. For the model we will implement the velocity like the formu
 
 $$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
 
-When solving with the magnus the formula of the magnitude of the acceleration becomes 
+When solving with the magnus force the formula of the magnitude of the acceleration becomes 
 as follows.
 $$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3 \begin{vmatrix} \overrightarrow{i} & 
 \overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ V_{x} & 
@@ -139,7 +136,7 @@ Plotly's R graphing library makes interactive, publication-quality graphs. Examp
 
 ## Model configuration
 Explain chosen initial state, parameter values and time sequence. Use tables with values as for example below
-\begin{longtable}[l]{l|l|l}
+\begin{longtable}[l]{l|l|l|l}
 \caption{Parameter Values} \\ \hline
 \label{param_table}
 $\textbf{Parameter}$ & $\textbf{Value}$ & $\textbf{Unit}$ & $\textbf{Description}$    \\ \hline
@@ -203,7 +200,7 @@ model <- function(t, y, parms){
 }
 ```
 
-## Model configuration
+## Model parameters
 
 | Variable/Parameter | Description                                        | Value/Formula                                      |
 |--------------------|----------------------------------------------------|----------------------------------------------------|
