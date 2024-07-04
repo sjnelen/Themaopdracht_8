@@ -19,7 +19,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include=T}
+```{r, include=TRUE, echo=FALSE}
 # Loading the packages with the pacman library
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(deSolve, pracma, plotly)
@@ -159,7 +159,7 @@ To achieve the goal of accurately modelling the path of a football, a combinatio
 of mathematical formulas, computational and visualization tools are utilized.
 The main piece of software that ties all of this together is R (version 4.4.1).
 R is a powerful tool for statistical computing and visualizing this in all sorts 
-graphs. Additionally a few extra R packages are used: 
+of graphs. Additionally a few extra R packages are used: 
 \begin{itemize}
   \item deSolve (version 1.40) The deSolve package provides a set of functions for 
         solving ordinary differential equations (ODEs) and partial differential
@@ -185,18 +185,25 @@ graphs. Additionally a few extra R packages are used:
 Explain chosen initial state, parameter values and time sequence. Use
 tables with values as for example below.
 
+The model uses a lot of different parameters and constants as seen in the multiple
+formulas and the table below. Every parameter has a initial value and the constants 
+have a constant value. In the table below every one of those is shown with a small
+description and the initial or constant value. Some parameters are used to simulate 
+someone kicking a still football, these are v, angle.z, angle.y, angle.x and state_straight. 
+These parameters are used to kick-start the model, otherwise the ball will not move.
+
 | Variable/Parameter | Description                                         | Value/Formula                                           |
 |------------------|---------------------------|---------------------------|
-| r                  | Radius of the football                              | 0.11                                                    |
-| rho                | Air density                                         | 1.29                                                    |
+| r                  | Radius of the football                              | 0.11 m                                                  |
+| rho                | Air density                                         | 1.29 $kg/m^3$                                                  |
 | cw                 | Drag coefficient of the football                    | 0.5                                                     |
 | cm                 | Another coefficient                                 | 1                                                       |
-| m                  | Mass of the football                                | 0.445                                                   |
+| m                  | Mass of the football                                | 0.445 kg                                                 |
 | k                  | Drag force coefficient                              | $\frac{1}{2} \cdot cw \cdot \rho \cdot (\pi \cdot r^2)$ |
 | mu                 | Friction coefficient                                | 0.1                                                     |
-| g                  | Gravitational acceleration                          | 9.81                                                    |
+| g                  | Gravitational acceleration                          | 9.81 $m/s^2$                                                    |
 | km                 | Another coefficient                                 | $cm \cdot 8 \cdot \rho \cdot r^3$                       |
-| f                  | Some constant                                       | 10                                                      |
+| f                  | Force                                               | 10 N                                                   |
 | lambda             | Magnus constant                                     | $\frac{8}{3} \pi \cdot r^3$                             |
 | e                  | Euler's number                                      | $e \approx 2.71828$                                     |
 | v                  | Initial velocity of the football                    | 30                                                      |
