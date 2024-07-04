@@ -43,6 +43,9 @@ football. This will be done using different physics formulas modelling the force
 at play like speed, gravity and air resistance. Furthermore the specific parameters
 that must be chosen to accurately model these forces will be examined and explained. 
 
+With all this in mind the question is, how can the trajectory of a football be 
+accurately modelled using the different forces at play?
+
 ## Goal
 
 -   Describe Goal (not the educational goal but the research goal)
@@ -50,15 +53,15 @@ that must be chosen to accurately model these forces will be examined and explai
     different setting)
 -   formulate hypothesis
 
-As you might have guessed the goal is to model the trajectory of a
-football that is kicked by someone. This is done by calculating the
-different forces at play on any given moment. The forces chosen to model
-are velocity, acceleration and the Magnus force. With these three the
-ball's position can be calculated for any given moment. The formulas for
-these three will be explained further in the theory section. In the
-results a few different starting parameters will be used to showcase
-different paths of the ball. The expectation is that this model will
-show a realistic path for a football.
+As you might have guessed the goal is to model the trajectory of a football that 
+is kicked by someone. This is done by calculating the different forces at play on 
+any given moment. The forces chosen to model are velocity, acceleration and the 
+Magnus force. With these three the ball's position can be calculated for any given 
+moment. The formulas for these three will be explained further in the theory section. 
+In the results different starting parameters will be used to showcase multiple 
+paths of a football using tools like Plotly to visualize the trajectories. The 
+expectation is that this model will show a realistic trajectory of a football 
+considering the effects of the different forces.
 
 ## Theory
 
@@ -68,7 +71,7 @@ show a realistic path for a football.
 To understand this model a little knowledge about basic physics can be
 useful, here is a small explanation about the forces. So everywhere
 around you there are different forces at play. One of the important
-forces is is the air resistance experienced with most outside activities
+forces is the air resistance experienced with most outside activities
 like running, cycling and even walking. For example with running you
 have to use energy to move forward, this is translated to force by your
 muscles. While moving you push the air out of the way and to do so the
@@ -152,27 +155,28 @@ the sideways direction.
 
 -   Describe the software tools used, as well as the libraries.
 
-R 4.3.2
-
-deSolve 1.40 The deSolve package provides a set of functions for solving
-ordinary differential equations (ODEs) and partial differential
-equations (PDEs) in R. It is commonly used in fields such as biology,
-chemistry, physics, and engineering to model and simulate dynamic
-systems.
-
-Pracma 2.4.4 This package provides R implementations of more advanced
-functions in numerical analysis, with a special view on on optimization
-and time series routines. Uses Matlab/Octave function names where
-appropriate to simplify porting. Some of these implementations are the
-result of courses on Scientific Computing (“Wissenschaftliches Rechnen”)
-and are mostly intended to demonstrate how to implement certain
-algorithms in R/S. Others are implementations of algorithms found in
-textbooks.
-
-Plotly 4.10.3 Plotly's R graphing library makes interactive,
-publication-quality graphs. Examples of how to make line plots, scatter
-plots, area charts, bar charts, error bars, box plots, histograms,
-heatmaps, subplots, multiple-axes, and 3D (WebGL based) charts.
+To achieve the goal of accurately modelling the path of a football, a combination
+of mathematical formulas, computational and visualization tools are utilized.
+The main piece of software that ties all of this together is R (version 4.4.1).
+R is a powerful tool for statistical computing and visualizing this in all sorts 
+graphs. Additionally a few extra R packages are used: 
+\begin{itemize}
+  \item deSolve (version 1.40) The deSolve package provides a set of functions for 
+        solving ordinary differential equations (ODEs) and partial differential
+        equations (PDEs) in R. It is commonly used in fields such as biology,
+        chemistry, physics, and engineering to model and simulate dynamic systems.
+  \item Pracma (version 2.4.4) This package provides R implementations of more advanced 
+        functions in numerical analysis, with a special view on on optimization and 
+        time series routines. Uses Matlab/Octave function names where appropriate 
+        to simplify porting. Some of these implementations are the result of courses 
+        on Scientific Computing (“Wissenschaftliches Rechnen”) and are mostly intended 
+        to demonstrate how to implement certain algorithms in R/S. Others are 
+        implementations of algorithms found in textbooks.
+  \item Plotly (version 4.10.4) Plotly's R graphing library makes interactive, 
+        publication-quality graphs. Examples of how to make line plots, scatter plots, 
+        area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, 
+        multiple-axes, and 3D (WebGL based) charts.
+\end{itemize}
 
 -   Describe the software implementation.
 
@@ -342,6 +346,7 @@ Che,Y., Abo Keir,M.(2022).Study on the training model of football movement traje
 
 \end{thebibliography}
 ```
+
 # Attachments
 
 ```{r attachment 1}
@@ -397,5 +402,3 @@ model <- function(t, y, parms){
   )
 }
 ```
-
-## 
