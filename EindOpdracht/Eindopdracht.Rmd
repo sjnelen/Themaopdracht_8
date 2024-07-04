@@ -29,17 +29,19 @@ pacman::p_load(deSolve, pracma, plotly)
 
 Introduction of the research and introduction research questions
 
-Ever heard of the game FIFA by EA? It is the most popular football game
-in the world played by millions. So to get the correct trajectory for
-the ball is one of the most important aspects of the game. If the
-trajectory is not realistic it wouldn't be as good of a game as it is
-now. One of the ways to get the correct trajectory is calculating it
-using a model with different forces acting on the ball. Think of things
-like speed, the gravity and air resistance. With these forces the
-trajectory of all kind of things can be calculated if the correct
-parameters are chosen. But not every object has the same forces acting
-on them. So in this report the trajectory of a football is chosen to
-look at and model.
+Ever heard of the game FIFA by EA? It is the most popular football game in the 
+world played by millions. So to get the correct trajectory for the ball is one of 
+the most important aspects of the game. If the trajectory is not realistic it 
+wouldn't be as good of a game as it is now. One of the ways to get the correct 
+trajectory is calculating it using a model with different forces acting on the ball. 
+Think of things like speed, gravity and air resistance. By accurately modelling 
+these forces, we can predict the path of a football. This is essential for things 
+like video games but also for predicting paths of different things or projectiles.
+
+So in this report the aim is to provide a model that models the trajectory of a
+football. This will be done using different physics formulas modelling the forces 
+at play like speed, gravity and air resistance. Furthermore the specific parameters
+that must be chosen to accurately model these forces will be examined and explained. 
 
 ## Goal
 
