@@ -159,7 +159,7 @@ To achieve the goal of accurately modelling the path of a football, a combinatio
 of mathematical formulas, computational and visualization tools are utilized.
 The main piece of software that ties all of this together is R (version 4.4.1).
 R is a powerful tool for statistical computing and visualizing this in all sorts 
-of graphs. Additionally a few extra R packages are used: 
+of graphs. Additionally a few extra R libraries are used: 
 \begin{itemize}
   \item deSolve (version 1.40) The deSolve package provides a set of functions for 
         solving ordinary differential equations (ODEs) and partial differential
@@ -179,6 +179,13 @@ of graphs. Additionally a few extra R packages are used:
 \end{itemize}
 
 -   Describe the software implementation.
+
+The deSolve library is used the solve the multiple differential equations in the model.
+These are mainly used to calculate the acceleration, velocity and position based 
+on the different forces acting on the football. With a function in the deSolve library
+the model is run over a defined time and stored in a data frame. To visualize all
+the positions of the ball the library Plotly is used. This is a library to make 
+interactive plots in R.
 
 ## Model configuration
 
@@ -213,11 +220,7 @@ These parameters are used to kick-start the model, otherwise the ball will not m
 | state_straight     | Initial state of the football                       | See code                                                |
 | times              | Time steps                                          | 0 to 10 with step size 0.01                             |
 
-# Results
-
-Introduction of results, how does it answer your research questions.
-
-```{r parameters(echo=F), echo=FALSE}
+```{r parameters, echo=FALSE}
 # variables & parameters
 r <- 0.11
 rho <- 1.29
@@ -242,7 +245,13 @@ state_straight <- c(velocity = c(x =6,
 
 # time steps
 times <- seq(0, 10, by = 0.01)
+```
 
+# Results
+
+Introduction of results, how does it answer your research questions.
+
+```{r model, echo=FALSE}
 # model
 model <- function(t, y, parms){
   with(as.list(c(y, parms)), {
