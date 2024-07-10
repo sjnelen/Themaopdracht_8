@@ -267,7 +267,7 @@ In the piece of code below the formulas of these different forces are used to fo
 the model. These are put in a R function simply named model. This function is used
 with the deSolve library to solve the differential equations and calculate the 
 acceleration, velocity and angular velocity of the football on every time step. With
-these parameters the position
+these parameters every possible position can be calculated.
 
 
 ```{r model, echo=FALSE, include=TRUE}
