@@ -159,7 +159,7 @@ To achieve the goal of accurately modelling the path of a football, a combinatio
 of mathematical formulas, computational and visualization tools are utilized.
 The main piece of software that ties all of this together is R (version 4.4.1).
 R is a powerful tool for statistical computing and visualizing this in all sorts 
-of graphs. Additionally a few extra R libraries are used: 
+of graphs. Additionally a few extra R libraries are imported and used: 
 \begin{itemize}
   \item deSolve (version 1.40) The deSolve package provides a set of functions for 
         solving ordinary differential equations (ODEs) and partial differential
@@ -189,7 +189,7 @@ interactive plots in R.
 
 ## Model configuration
 
-Explain chosen initial state, parameter values and time sequence. Use
+-   Explain chosen initial state, parameter values and time sequence. Use
 tables with values as for example below.
 
 The model uses a lot of different parameters and constants as seen in the multiple
@@ -199,12 +199,20 @@ description and the initial or constant value. Some parameters are used to simul
 someone kicking a still football, these are v, angle.z, angle.y, angle.x and state_straight. 
 These parameters are used to kick-start the model, otherwise the ball will not move.
 
+Most of these parameters are self-explanatory and chosen based on typical physical
+characteristics of a football. And the others are mostly some constants and coefficients
+that are needed for the formulas. These are fixed and always the same, so these can
+be found online when searching for the formulas. All the parameters as well as the
+starting values are entered in the piece of R code shown under the table. These can 
+later be used in the code that functions as the model, which will be discussed in
+the results.
+
 | Variable/Parameter | Description                                         | Value/Formula                                           |
 |------------------|---------------------------|---------------------------|
 | r                  | Radius of the football                              | 0.11 m                                                  |
 | rho                | Air density                                         | 1.29 $kg/m^3$                                                  |
 | cw                 | Drag coefficient of the football                    | 0.5                                                     |
-| cm                 | Another coefficient                                 | 1                                                       |
+| cm                 | Magnus coefficient                                 | 1                                                       |
 | m                  | Mass of the football                                | 0.445 kg                                                 |
 | k                  | Drag force coefficient                              | $\frac{1}{2} \cdot cw \cdot \rho \cdot (\pi \cdot r^2)$ |
 | mu                 | Friction coefficient                                | 0.1                                                     |
@@ -243,16 +251,27 @@ state_straight <- c(velocity = c(x =6,
                                 y = -2,
                                 z = 14))
 
-# time steps
+# time steps in seconds 
 times <- seq(0, 10, by = 0.01)
 ```
 
 # Results
 
-Introduction of results, how does it answer your research questions.
+-   Introduction of results, how does it answer your research questions.
 
-```{r model, echo=FALSE}
-# model
+In this section, the results of the simulation are shown. The model shows the 
+trajectory of a football based on a calculation taking different forces, like 
+drag, Magnus and gravitational, forces in to account. 
+
+In the piece of code below the formulas of these different forces are used to form
+the model. These are put in a R function simply named model. This function is used
+with the deSolve library to solve the differential equations and calculate the 
+acceleration, velocity and angular velocity of the football on every time step. With
+these parameters the position
+
+
+```{r model, echo=FALSE, include=TRUE}
+# Formulas in a function named model
 model <- function(t, y, parms){
   with(as.list(c(y, parms)), {
     # velocity & positioning
@@ -263,24 +282,26 @@ model <- function(t, y, parms){
     # Model for acceleration
     V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) 
     
-    # Magnus force
+    # Magnus force components
     lambda.z <- lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
     lambda.x <- lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
     lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
 
-
+    # Accelerations
     az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu - m * g) / m
     ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu) / m
     ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu) / m
-
+    
     acc <- c(ax, ay, az)
+    
+    # Return the derivatives
     return(list(c(acc, velocity, angular)))
   }
   )
 }
 ```
 
-```{r results, include=T}
+```{r results, include=F}
 # performing simulation
 out <- as.data.frame(ode(times = times,
                          y = state_straight,
