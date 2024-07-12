@@ -239,17 +239,13 @@ parameters <- c(m = 0.445, k = (1/2) * cw * rho * (pi * r^2),
                 lambda =  8/3*pi*r^3, e = exp(1))
 
 # state of start
-v <- 30
-angle.z <- 25
-angle.y <- 30
-angle.x <- 7
-state_straight <- c(velocity = c(x =6,
-                                 y = 37.5,
-                                 z = 11.5),
+state_straight <- c(velocity = c(x = -0.5,
+                                 y = 50,
+                                 z = 10),
                     position = c(x = 0, y = 0, z = 0),
                     angular = c(x = 2,
                                 y = -2,
-                                z = 14))
+                                z = 4))
 
 # time steps in seconds 
 times <- seq(0, 10, by = 0.01)
@@ -344,11 +340,9 @@ fig <- fig %>% add_trace(data = goal,
 # resizing plot
 ratio <- max(output$position.z) / max(output$position.y)
 fig <- fig %>% layout(scene = list(aspectratio = list(x = 1, y = 1, z = .4)))
-
-fig
 ```
 
-```{r}
+```{r figures, fig.cap= "The trajectory of a football in the x, y and z space"}
 # set up a 2x2 grid
 par(mfrow = c(2, 2))
 
