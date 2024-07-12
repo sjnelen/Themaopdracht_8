@@ -257,14 +257,13 @@ times <- seq(0, 10, by = 0.01)
 
 In this section, the results of the simulation are shown. The model shows the 
 trajectory of a football based on a calculation taking different forces, like 
-drag, Magnus and gravitational, forces in to account. 
+drag, Magnus and gravitational forces into account. 
 
 In the piece of code below the formulas of these different forces are used to form
 the model. These are put in a R function simply named model. This function is used
 with the deSolve library to solve the differential equations and calculate the 
 acceleration, velocity and angular velocity of the football on every time step. With
 these parameters every possible position can be calculated.
-
 
 ```{r model, echo=FALSE, include=TRUE}
 # Formulas in a function named model
@@ -306,40 +305,6 @@ out <- as.data.frame(ode(times = times,
 
 # filtering results
 output <- subset(out, position.z >= 0)
-
-# 2 dimensional fig of trajectory
-plot(output$position.y,
-     output$position.z,
-     type = "l",
-     ylab = "Height in m",
-     xlab = "Length in m",
-     main = "Trajectory")
-
-# dimensional representation
-fig <- plot_ly(output,
-               x = ~position.x,
-               y = ~position.y,
-               z = ~position.z,
-               type = 'scatter3d',
-               mode = 'lines',
-               opacity = 1)
-
-
-# adding goal
-goal <- data.frame(x = c(-3.66,-3.66,3.66,3.66),  
-                        y = c(30,30,30,30),
-                        z = c(0,2.44,2.44,0))
-
-fig <- fig %>% add_trace(data = goal,
-                         x = ~x,
-                         y = ~y,
-                         z = ~z,
-                         mode = "lines",
-                         name = "Goal")
-
-# resizing plot
-ratio <- max(output$position.z) / max(output$position.y)
-fig <- fig %>% layout(scene = list(aspectratio = list(x = 1, y = 1, z = .4)))
 ```
 
 ```{r figures, fig.cap= "The trajectory of a football in the x, y and z space"}
