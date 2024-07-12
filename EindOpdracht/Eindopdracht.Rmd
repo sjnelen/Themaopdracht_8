@@ -301,7 +301,7 @@ model <- function(t, y, parms){
 }
 ```
 
-```{r results, include=F}
+```{r results, include=T}
 # performing simulation
 out <- as.data.frame(ode(times = times,
                          y = state_straight,
@@ -345,8 +345,55 @@ fig <- fig %>% add_trace(data = goal,
 ratio <- max(output$position.z) / max(output$position.y)
 fig <- fig %>% layout(scene = list(aspectratio = list(x = 1, y = 1, z = .4)))
 
-#fig
+fig
 ```
+
+```{r}
+# set up a 2x2 grid
+par(mfrow = c(2, 2))
+
+# 2 dimensional fig of trajectory from side
+plot(output$position.y,
+     output$position.z,
+     type = "l",
+     ylab = "< Down | Up >",
+     xlab = "< Player | Goal >",
+     main = "Trajectory from the side")
+
+segments(x0 = 30, y0 = min(output$position.z), x1 = 30, y1 = 2.44, col = "red")
+
+# 2 dimensional fig of trajectory
+plot(output$position.x,
+     output$position.z,
+     xlim = c(-6, 6),
+     type = "l",
+     ylab = "< Down | Up >",
+     xlab = "< Left | Right >",
+     main = "Trajectory from the front")
+# first line from (-3.66, 0) to (-3.66, 2.44)
+segments(x0 = -3.66, y0 = 0, x1 = -3.66, y1 = 2.44, col = "red")
+
+# second line from (-3.66, 2.44) to (3.66, 2.44)
+segments(x0 = -3.66, y0 = 2.44, x1 = 3.66, y1 = 2.44, col = "red")
+
+# third line from (3.66, 2.44) to (3.66, 0)
+segments(x0 = 3.66, y0 = 2.44, x1 = 3.66, y1 = 0, col = "red")
+
+
+# 2 dimensional fig of trajectory
+plot(x = output$position.x,
+     y = output$position.y,
+     xlim = c(-6, 6),
+     type = "l",
+     ylab = "< Player | Goal >",
+     xlab = "< Left | Right >",
+     main = "Trajectory")
+ # first line from (-3.66, 30) to (3.66, 30)
+segments(x0 = -3.66, y0 = 30, x1 = 3.66, y1 = 30, col = "red")
+
+
+```
+
 
 -   Describe what can be seen in such way that it leads to an answer to
     your research questions
