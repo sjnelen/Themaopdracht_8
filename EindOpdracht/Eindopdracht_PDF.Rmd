@@ -195,9 +195,9 @@ tables with values as for example below.
 The model uses a lot of different parameters and constants as seen in the multiple
 formulas and the table below. Every parameter has a initial value and the constants 
 have a constant value. In the table below every one of those is shown with a small
-description and the initial or constant value. Some parameters are used to simulate 
-someone kicking a still football, these are v, angle.z, angle.y, angle.x and state_straight. 
-These parameters are used to kick-start the model, otherwise the ball will not move.
+description and the initial or constant value. The parameters used to simulate 
+a still football being kicked are v, angle.z, angle.y, angle.x and state_straight. 
+These parameters are used as a start point in the model, otherwise the ball will not move.
 
 Most of these parameters are self-explanatory and chosen based on typical physical
 characteristics of a football. And the others are mostly some constants and coefficients
@@ -346,12 +346,19 @@ plot(x = output$position.x,
      type = "l",
      ylab = "< Player | Goal >",
      xlab = "< Left | Right >",
-     main = "Trajectory")
+     main = "Trajectory from above")
  # first line from (-3.66, 30) to (3.66, 30)
 segments(x0 = -3.66, y0 = 30, x1 = 3.66, y1 = 30, col = "red")
 
 
 ```
+In this figure, three perspectives of the trajectory are shown: the side, front, and above perspectives. A goal is lined out in red, standing 30 meters from the shot. In the front and above perspectives, it is visible that the arc is skewed to the right side before traveling to the left. This is the Magnus effect.
+
+
+
+
+
+
 
 
 -   Describe what can be seen in such way that it leads to an answer to
