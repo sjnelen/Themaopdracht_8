@@ -372,10 +372,7 @@ In this figure, three perspectives of the trajectory are shown: the side, front,
 
 ## Discussion
 
-Original literature was confusing
-not sure if the powers used are fully correct
-differennt powers used then in the paper
-the model looks very nice
+The original paper used for this project was confusing, and there were uncertainties in the math, with powers added without explanation. Our powers and coefficients differ from those used in the paper. Nevertheless, the model we presented still shows a realistic trajectory of the football, accounting for different forces such as drag, gravity, and the Magnus effect. Improvements could still be made, such as refining the constant we use for the Magnus force. Overall, we consider this a somewhat valid model that functions as we expected.
 
 -   Compare your results with what is expecting from the literature and
     discuss differences with them.
