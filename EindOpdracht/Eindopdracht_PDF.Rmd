@@ -372,6 +372,11 @@ In this figure, three perspectives of the trajectory are shown: the side, front,
 
 ## Discussion
 
+Original literature was confusing
+not sure if the powers used are fully correct
+differennt powers used then in the paper
+the model looks very nice
+
 -   Compare your results with what is expecting from the literature and
     discuss differences with them.
 -   Discuss striking and surprising results.
