@@ -25,26 +25,33 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(deSolve, pracma, plotly)
 ```
 
+\newpage
+
 # Introduction
 
 Introduction of the research and introduction research questions
 
-Ever heard of the game FIFA by EA? It is the most popular football game in the 
-world played by millions. So to get the correct trajectory for the ball is one of 
-the most important aspects of the game. If the trajectory is not realistic it 
-wouldn't be as good of a game as it is now. One of the ways to get the correct 
-trajectory is calculating it using a model with different forces acting on the ball. 
-Think of things like speed, gravity and air resistance. By accurately modelling 
-these forces, we can predict the path of a football. This is essential for things 
-like video games but also for predicting paths of different things or projectiles.
+Ever heard of the game FIFA by EA? It is the most popular football game
+in the world played by millions. So to get the correct trajectory for
+the ball is one of the most important aspects of the game. If the
+trajectory is not realistic it wouldn't be as good of a game as it is
+now. One of the ways to get the correct trajectory is calculating it
+using a model with different forces acting on the ball. Think of things
+like speed, gravity and air resistance. By accurately modelling these
+forces, we can predict the path of a football. This is essential for
+things like video games but also for predicting paths of different
+things or projectiles.
 
-So in this report the aim is to provide a model that models the trajectory of a
-football. This will be done using different physics formulas modelling the forces 
-at play like speed, gravity and air resistance. Furthermore the specific parameters
-that must be chosen to accurately model these forces will be examined and explained. 
+So in this report the aim is to provide a model that models the
+trajectory of a football. This will be done using different physics
+formulas modelling the forces at play like speed, gravity and air
+resistance. Furthermore the specific parameters that must be chosen to
+accurately model these forces will be examined and explained.
 
-With all this in mind the question is, how can the trajectory of a football be 
-accurately modelled using the different forces at play?
+With all this in mind the question is, how can the trajectory of a
+football be accurately modelled using the different forces at play?
+
+\newpage
 
 ## Goal
 
@@ -53,15 +60,19 @@ accurately modelled using the different forces at play?
     different setting)
 -   formulate hypothesis
 
-As you might have guessed the goal is to model the trajectory of a football that 
-is kicked by someone. This is done by calculating the different forces at play on 
-any given moment. The forces chosen to model are velocity, acceleration and the 
-Magnus force. With these three the ball's position can be calculated for any given 
-moment. The formulas for these three will be explained further in the theory section. 
-In the results different starting parameters will be used to showcase multiple 
-paths of a football using tools like Plotly to visualize the trajectories. The 
-expectation is that this model will show a realistic trajectory of a football 
-considering the effects of the different forces.
+As you might have guessed the goal is to model the trajectory of a
+football that is kicked by someone. This is done by calculating the
+different forces at play on any given moment. The forces chosen to model
+are velocity, acceleration and the Magnus force. With these three the
+ball's position can be calculated for any given moment. The formulas for
+these three will be explained further in the theory section. In the
+results different starting parameters will be used to showcase multiple
+paths of a football using tools like Plotly to visualize the
+trajectories. The expectation is that this model will show a realistic
+trajectory of a football considering the effects of the different
+forces.
+
+\newpage
 
 ## Theory
 
@@ -149,17 +160,22 @@ direction:$$ \frac{\delta a_{y}}{\delta t} = \frac{-k \cdot V_{y} \cdot V + \lam
 Here, $V_y$ is the sideways speed and $\lambda_y$ is the magnus force in
 the sideways direction.
 
+\newpage
+
 # Methods
 
 ## The software model
 
 -   Describe the software tools used, as well as the libraries.
 
-To achieve the goal of accurately modelling the path of a football, a combination
-of mathematical formulas, computational and visualization tools are utilized.
-The main piece of software that ties all of this together is R (version 4.4.1).
-R is a powerful tool for statistical computing and visualizing this in all sorts 
-of graphs. Additionally a few extra R libraries are imported and used: 
+To achieve the goal of accurately modelling the path of a football, a
+combination of mathematical formulas, computational and visualization
+tools are utilized. The main piece of software that ties all of this
+together is R (version 4.4.1). R is a powerful tool for statistical
+computing and visualizing this in all sorts of graphs. Additionally a
+few extra R libraries are imported and used:
+
+```{=tex}
 \begin{itemize}
   \item deSolve (version 1.40) The deSolve package provides a set of functions for 
         solving ordinary differential equations (ODEs) and partial differential
@@ -177,48 +193,54 @@ of graphs. Additionally a few extra R libraries are imported and used:
         area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, 
         multiple-axes, and 3D (WebGL based) charts.
 \end{itemize}
-
+```
 -   Describe the software implementation.
 
-The deSolve library is used the solve the multiple differential equations in the model.
-These are mainly used to calculate the acceleration, velocity and position based 
-on the different forces acting on the football. With a function in the deSolve library
-the model is run over a defined time and stored in a data frame. To visualize all
-the positions of the ball the library Plotly is used. This is a library to make 
-interactive plots in R.
+The deSolve library is used the solve the multiple differential
+equations in the model. These are mainly used to calculate the
+acceleration, velocity and position based on the different forces acting
+on the football. With a function in the deSolve library the model is run
+over a defined time and stored in a data frame. To visualize all the
+positions of the ball the library Plotly is used. This is a library to
+make interactive plots in R.
+
+\newpage
 
 ## Model configuration
 
--   Explain chosen initial state, parameter values and time sequence. Use
-tables with values as for example below.
+-   Explain chosen initial state, parameter values and time sequence.
+    Use tables with values as for example below.
 
-The model uses a lot of different parameters and constants as seen in the multiple
-formulas and the table below. Every parameter has a initial value and the constants 
-have a constant value. In the table below every one of those is shown with a small
-description and the initial or constant value. The parameters used to simulate 
-a still football being kicked are v, angle.z, angle.y, angle.x and state_straight. 
-These parameters are used as a start point in the model, otherwise the ball will not move.
+The model uses a lot of different parameters and constants as seen in
+the multiple formulas and the table below. Every parameter has a initial
+value and the constants have a constant value. In the table below every
+one of those is shown with a small description and the initial or
+constant value. The parameters used to simulate a still football being
+kicked are v, angle.z, angle.y, angle.x and state_straight. These
+parameters are used as a start point in the model, otherwise the ball
+will not move.
 
-Most of these parameters are self-explanatory and chosen based on typical physical
-characteristics of a football. And the others are mostly some constants and coefficients
-that are needed for the formulas. These are fixed and always the same, so these can
-be found online when searching for the formulas. All the parameters as well as the
-starting values are entered in the piece of R code shown under the table. These can 
-later be used in the code that functions as the model, which will be discussed in
-the results.
+Most of these parameters are self-explanatory and chosen based on
+typical physical characteristics of a football. And the others are
+mostly some constants and coefficients that are needed for the formulas.
+These are fixed and always the same, so these can be found online when
+searching for the formulas. All the parameters as well as the starting
+values are entered in the piece of R code shown under the table. These
+can later be used in the code that functions as the model, which will be
+discussed in the results.
 
 | Variable/Parameter | Description                                         | Value/Formula                                           |
 |------------------|---------------------------|---------------------------|
 | r                  | Radius of the football                              | 0.11 m                                                  |
-| rho                | Air density                                         | 1.29 $kg/m^3$                                                  |
+| rho                | Air density                                         | 1.29 $kg/m^3$                                           |
 | cw                 | Drag coefficient of the football                    | 0.5                                                     |
-| cm                 | Magnus coefficient                                 | 1                                                       |
-| m                  | Mass of the football                                | 0.445 kg                                                 |
+| cm                 | Magnus coefficient                                  | 1                                                       |
+| m                  | Mass of the football                                | 0.445 kg                                                |
 | k                  | Drag force coefficient                              | $\frac{1}{2} \cdot cw \cdot \rho \cdot (\pi \cdot r^2)$ |
 | mu                 | Friction coefficient                                | 0.1                                                     |
-| g                  | Gravitational acceleration                          | 9.81 $m/s^2$                                                    |
+| g                  | Gravitational acceleration                          | 9.81 $m/s^2$                                            |
 | km                 | Another coefficient                                 | $cm \cdot 8 \cdot \rho \cdot r^3$                       |
-| f                  | Force                                               | 10 N                                                   |
+| f                  | Force                                               | 10 N                                                    |
 | lambda             | Magnus constant                                     | $\frac{8}{3} \pi \cdot r^3$                             |
 | e                  | Euler's number                                      | $e \approx 2.71828$                                     |
 | v                  | Initial velocity of the football                    | 30                                                      |
@@ -251,21 +273,26 @@ state_straight <- c(velocity = c(x = -0.5,
 times <- seq(0, 10, by = 0.01)
 ```
 
+\newpage
+
 # Results
 
 -   Introduction of results, how does it answer your research questions.
 
-In this section, the results of the simulation are shown. The model shows the 
-trajectory of a football based on a calculation taking different forces, like 
-drag, Magnus and gravitational forces into account. 
+## The Model
+In this section, the results of the simulation are shown. The model
+shows the trajectory of a football based on a calculation taking
+different forces, like drag, Magnus and gravitational forces into
+account.
 
-In the piece of code below the formulas of these different forces are used to form
-the model. These are put in a R function simply named model. This function is used
-with the deSolve library to solve the differential equations and calculate the 
-acceleration, velocity and angular velocity of the football on every time step. With
-these parameters every possible position can be calculated.
+In the piece of code below the formulas of these different forces are
+used to form the model. These are put in a R function simply named
+model. This function is used with the deSolve library to solve the
+differential equations and calculate the acceleration, velocity and
+angular velocity of the football on every time step. With these
+parameters every possible position can be calculated.
 
-```{r model, echo=FALSE, include=TRUE}
+```{r model, echo=TRUE, include=TRUE}
 # Formulas in a function named model
 model <- function(t, y, parms){
   with(as.list(c(y, parms)), {
@@ -295,7 +322,8 @@ model <- function(t, y, parms){
   )
 }
 ```
-
+\newpage
+The code chunk below will run the model.
 ```{r results, include=T}
 # performing simulation
 out <- as.data.frame(ode(times = times,
@@ -307,6 +335,8 @@ out <- as.data.frame(ode(times = times,
 output <- subset(out, position.z >= 0)
 ```
 
+## Visualization
+The code below will produce the figure that will produce a visualization of the model from three perspectives.
 ```{r figures, fig.cap= "The trajectory of a football in the x, y and z space"}
 # set up a 2x2 grid
 par(mfrow = c(2, 2))
@@ -338,7 +368,6 @@ segments(x0 = -3.66, y0 = 2.44, x1 = 3.66, y1 = 2.44, col = "red")
 # third line from (3.66, 2.44) to (3.66, 0)
 segments(x0 = 3.66, y0 = 2.44, x1 = 3.66, y1 = 0, col = "red")
 
-
 # 2 dimensional fig of trajectory
 plot(x = output$position.x,
      y = output$position.y,
@@ -352,14 +381,12 @@ segments(x0 = -3.66, y0 = 30, x1 = 3.66, y1 = 30, col = "red")
 
 
 ```
-In this figure, three perspectives of the trajectory are shown: the side, front, and above perspectives. A goal is lined out in red, standing 30 meters from the shot. In the front and above perspectives, it is visible that the arc is skewed to the right side before traveling to the left. This is the Magnus effect.
 
-
-
-
-
-
-
+In this figure, three perspectives of the trajectory are shown: the
+side, front, and above perspectives. A goal is lined out in red,
+standing 30 meters from the shot. In the perspectives form the frond and
+above, it is visible that the arc is skewed to the right side before
+traveling to the left. This is the Magnus effect.
 
 -   Describe what can be seen in such way that it leads to an answer to
     your research questions
@@ -368,11 +395,21 @@ In this figure, three perspectives of the trajectory are shown: the side, front,
 -   Always refer to and discuss your figures and tables in the text -
     they never stand alone.
 
+\newpage
+
 # Discussion and Conclusion
 
 ## Discussion
 
-The original paper used for this project was confusing, and there were uncertainties in the math, with powers added without explanation. Our powers and coefficients differ from those used in the paper. Nevertheless, the model we presented still shows a realistic trajectory of the football, accounting for different forces such as drag, gravity, and the Magnus effect. Improvements could still be made, such as refining the constant we use for the Magnus force. Overall, we consider this a somewhat valid model that functions as we expected.
+The original paper used for this project was confusing, and there were
+uncertainties in the math, with powers added without explanation. Our
+powers and coefficients differ from those used in the paper.
+Nevertheless, the model we presented still shows a realistic trajectory
+of the football, accounting for different forces such as drag, gravity,
+and the Magnus effect. Improvements could still be made, such as
+refining the constant we use for the Magnus force. Overall, we consider
+this a somewhat valid model that functions as we expected. As is visable
+in Figure 1.
 
 -   Compare your results with what is expecting from the literature and
     discuss differences with them.
@@ -383,6 +420,8 @@ The original paper used for this project was confusing, and there were uncertain
 
 Discuss what your goal was, what the end result is and how you could
 continue working from here.
+
+\newpage
 
 ```{=tex}
 \begin{thebibliography}{9}
@@ -398,6 +437,7 @@ Che,Y., Abo Keir,M.(2022).Study on the training model of football movement traje
 
 \end{thebibliography}
 ```
+\newpage
 
 # Attachments
 
