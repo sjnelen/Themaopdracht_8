@@ -3,7 +3,7 @@ title: "Eindopdracht"
 author: "Muniru & Sam"
 date: '2022-06-03'
 output:
-  pdf_document:
+  bookdown::pdf_document2:
     toc: yes
     toc_depth: 2
   html_document:
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, include=TRUE, echo=FALSE}
 # Loading the packages with the pacman library
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(deSolve, pracma, plotly)
+pacman::p_load(deSolve, pracma, plotly, bookdown)
 ```
 
 \newpage
@@ -49,7 +49,7 @@ resistance. Furthermore the specific parameters that must be chosen to
 accurately model these forces will be examined and explained.
 
 With all this in mind the question is, how can the trajectory of a
-football be accurately modelled using the different forces at play?
+football be accurately modeled using the different forces at play?
 
 \newpage
 
@@ -382,7 +382,7 @@ segments(x0 = -3.66, y0 = 30, x1 = 3.66, y1 = 30, col = "red")
 
 ```
 
-In this figure, three perspectives of the trajectory are shown: the
+In this figure \@ref(fig:figures), three perspectives of the trajectory are shown: the
 side, front, and above perspectives. A goal is lined out in red,
 standing 30 meters from the shot. In the perspectives form the frond and
 above, it is visible that the arc is skewed to the right side before
@@ -403,13 +403,14 @@ traveling to the left. This is the Magnus effect.
 
 The original paper used for this project was confusing, and there were
 uncertainties in the math, with powers added without explanation. Our
-powers and coefficients differ from those used in the paper.
-Nevertheless, the model we presented still shows a realistic trajectory
-of the football, accounting for different forces such as drag, gravity,
-and the Magnus effect. Improvements could still be made, such as
-refining the constant we use for the Magnus force. Overall, we consider
-this a somewhat valid model that functions as we expected. As is visable
-in Figure 1.
+powers and coefficients differ from those used in the paper. To deal 
+with this was a challange to say the least. Nevertheless, the model we 
+presented still shows a realistic trajectory of the football, accounting
+for different forces such as drag, gravity,and the Magnus effect. 
+Improvements could still be made, such as refining the constant we use 
+for the Magnus force. Overall, we consider this a somewhat valid model 
+that functions as we expected. As is visible
+in Figure 1. 
 
 -   Compare your results with what is expecting from the literature and
     discuss differences with them.
@@ -418,8 +419,17 @@ in Figure 1.
 
 ## General conclusion and perspective
 
-Discuss what your goal was, what the end result is and how you could
-continue working from here.
+-   Discuss what your goal was, what the end result is and how you could
+    continue working from here.
+
+Our goal aimed at realistically simulating the trajectory of a football when 
+kicked. With all forces acting on the ball it was quite the challenge, as 
+mentioned before. Overall the end result is a success. We can produce a 
+realistic trajectory ,without a bounce, in 3d space. In the future we could 
+expand op on our project we could add a bounce. Furthering the capabilities of 
+our model. Making the model not only suited for simulating a shot but also 
+include passes.
+
 
 \newpage
 
