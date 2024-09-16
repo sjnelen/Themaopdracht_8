@@ -1,15 +1,12 @@
 ---
-title: "Eindopdracht"
-author: "Muniru & Sam"
-date: '2022-06-03'
+documentclass: report
 output:
-  pdf_document:
+  bookdown::pdf_document2:
     toc: yes
     toc_depth: 2
-  html_document:
-    toc: yes
-    toc_depth: '2'
-    df_print: paged
+    number_sections: true
+    includes:
+      before_body: cover-page.tex
 editor_options: 
   markdown: 
     wrap: 72
@@ -19,10 +16,10 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include=TRUE, echo=FALSE}
+```{r, include=FALSE, echo=FALSE}
 # Loading the packages with the pacman library
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(deSolve, pracma, plotly)
+pacman::p_load(deSolve, pracma, plotly, bookdown)
 ```
 
 \newpage
@@ -95,7 +92,7 @@ different formulas. Velocity, Acceleration and a formula for the Magnus
 force. These three are split in a X-, Y-, Z-axis to calculate the forces
 in a 3D plane.
 
-```{r ball picture, echo=FALSE, out.width='95%'}
+```{r ball picture, echo=FALSE, out.width='95%', fig.cap= "An image showing the different forces on a football"}
 knitr::include_graphics('../images/forcesFootball.jpg')
 ```
 
@@ -223,16 +220,16 @@ will not move.
 Most of these parameters are self-explanatory and chosen based on
 typical physical characteristics of a football. And the others are
 mostly some constants and coefficients that are needed for the formulas.
-These are fixed and always the same, so these can be found online when
-searching for the formulas. All the parameters as well as the starting
-values are entered in the piece of R code shown under the table. These
-can later be used in the code that functions as the model, which will be
+These are fixed and always the same, so these can be found online when searching 
+for the formulas and the constants. All the parameters as well as the starting 
+values are entered in the piece of R code shown in the [attachments](\@ref(test)) 
+These can later be used in the code that functions as the model, which will be
 discussed in the results.
 
 | Variable/Parameter | Description                                         | Value/Formula                                           |
 |------------------|---------------------------|---------------------------|
 | r                  | Radius of the football                              | 0.11 m                                                  |
-| rho                | Air density                                         | 1.29 $kg/m^3$                                           |
+| rho                | Air density                                         | 1.20 $kg/m^3$                                           |
 | cw                 | Drag coefficient of the football                    | 0.5                                                     |
 | cm                 | Magnus coefficient                                  | 1                                                       |
 | m                  | Mass of the football                                | 0.445 kg                                                |
@@ -253,7 +250,7 @@ discussed in the results.
 ```{r parameters, echo=FALSE}
 # variables & parameters
 r <- 0.11
-rho <- 1.29
+rho <- 1.20
 cw <- 0.5
 cm <- 1
 parameters <- c(m = 0.445, k = (1/2) * cw * rho * (pi * r^2),
@@ -310,9 +307,12 @@ model <- function(t, y, parms){
     lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
 
     # Accelerations
-    az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu - m * g) / m
-    ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu) / m
-    ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu) / m
+    az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) 
+           * e^-mu - m * g) / m
+    ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) 
+           * e^-mu) / m
+    ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) 
+           * e^-mu) / m
     
     acc <- c(ax, ay, az)
     
@@ -382,11 +382,14 @@ segments(x0 = -3.66, y0 = 30, x1 = 3.66, y1 = 30, col = "red")
 
 ```
 
-In this figure, three perspectives of the trajectory are shown: the
+In this figure \@ref(fig:figures), three perspectives of the trajectory are shown: the
 side, front, and above perspectives. A goal is lined out in red,
 standing 30 meters from the shot. In the perspectives form the frond and
 above, it is visible that the arc is skewed to the right side before
-traveling to the left. This is the Magnus effect.
+travelling to the left. This is the Magnus effect.
+```{r fig.cap="A 3d plot showing the same trajectory", fig.show='hold', fig.align='center', out.width='50%'}
+knitr::include_graphics(c('../images/3d_plot.png', "../images/3d_plot2.png"))
+```
 
 -   Describe what can be seen in such way that it leads to an answer to
     your research questions
@@ -427,24 +430,30 @@ continue working from here.
 \begin{thebibliography}{9}
 
 \bibitem{Soertaert10}
-Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving  in R: package deSolve}, J. Stat. Softw., 33, 1-25, 2010.
+Soetaert, K., Petzoldt, T., and Woodrow Setzer, R.: \textit{Solving  in R: package deSolve}, J. Stat. Softw.,
+33, 1-25, 2010.
 
 
 \bibitem{Che21}
-Che,Y., Abo Keir,M.(2022).Study on the training model of football movement trajectory drop point based on fractional differential equation. Applied Mathematics and Nonlinear Sciences,7(1) 425-430. https://doi.org/10.2478/amns.2021.2.00095
+Che,Y., Abo Keir,M.(2022). \textit{Study on the training model of football movement trajectory drop point
+based on fractional differential equation. Applied Mathematics and Nonlinear Sciences,7(1) 425-430}.
+\url{https://doi.org/10.2478/amns.2021.2.00095}.
 
-
+\bibitem{natuurkunde_beckham}
+Natuurkunde.nl,
+\textit{De vrije schop van David Beckham},
+2010. Available at: \url{https://www.natuurkunde.nl/artikelen/807/de-vrije-schop-van-david-beckham}.
 
 \end{thebibliography}
 ```
 \newpage
 
-# Attachments
+# Attachments {#test}
 
 ```{r attachment 1}
 # variables & parameters
 r <- 0.11
-rho <- 1.29
+rho <- 1.20
 cw <- 0.5
 cm <- 1
 parameters <- c(m = 0.445, k = (1/2) * cw * rho * (pi * r^2),
