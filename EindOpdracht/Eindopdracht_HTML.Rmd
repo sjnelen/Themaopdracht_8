@@ -7,9 +7,6 @@ output:
     toc: yes
     toc_depth: '2'
     df_print: paged
-  pdf_document:
-    toc: yes
-    toc_depth: 2
 editor_options: 
   markdown: 
     wrap: 72
