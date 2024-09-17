@@ -7,9 +7,6 @@ output:
     toc: yes
     toc_depth: '2'
     df_print: paged
-  pdf_document:
-    toc: yes
-    toc_depth: 2
 editor_options: 
   markdown: 
     wrap: 72
@@ -320,8 +317,9 @@ fig <- plot_ly(output,
                x = ~position.x,
                y = ~position.y,
                z = ~position.z,
-               type = 'scatter3d',
-               mode = 'lines',
+               type = "scatter3d",
+               mode = "lines",
+               name = "Trajectory",
                opacity = 1)
 
 
