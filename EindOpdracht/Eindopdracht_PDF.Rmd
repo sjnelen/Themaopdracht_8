@@ -26,22 +26,20 @@ pacman::p_load(deSolve, pracma, plotly, bookdown)
 
 # Introduction
 
-Introduction of the research and introduction research questions
-
 Ever heard of the game FIFA by EA? It is the most popular football game
 in the world played by millions. So to get the correct trajectory for
 the ball is one of the most important aspects of the game. If the
 trajectory is not realistic it wouldn't be as good of a game as it is
 now. One of the ways to get the correct trajectory is calculating it
 using a model with different forces acting on the ball. Think of things
-like speed, gravity and air resistance. By accurately modelling these
+like speed, gravity, the magnus effect and air resistance. By accurately modelling these
 forces, we can predict the path of a football. This is essential for
 things like video games but also for predicting paths of different
 things or projectiles.
 
 So in this report the aim is to provide a model that models the
 trajectory of a football. This will be done using different physics
-formulas modelling the forces at play like speed, gravity and air
+formulas modelling the forces at play like speed, gravity, magnus effect and air
 resistance. Furthermore the specific parameters that must be chosen to
 accurately model these forces will be examined and explained.
 
@@ -51,11 +49,6 @@ football be accurately modeled using the different forces at play?
 \newpage
 
 ## Goal
-
--   Describe Goal (not the educational goal but the research goal)
--   Describe how you reach the goal (e.g. make model and figures, use
-    different setting)
--   formulate hypothesis
 
 As you might have guessed the goal is to model the trajectory of a
 football that is kicked by someone. This is done by calculating the
@@ -72,9 +65,6 @@ forces.
 \newpage
 
 ## Theory
-
--   Describe the model
--   Picture of the model
 
 To understand this model a little knowledge about basic physics can be
 useful, here is a small explanation about the forces. So everywhere
@@ -163,8 +153,6 @@ the sideways direction.
 
 ## The software model
 
--   Describe the software tools used, as well as the libraries.
-
 To achieve the goal of accurately modelling the path of a football, a
 combination of mathematical formulas, computational and visualization
 tools are utilized. The main piece of software that ties all of this
@@ -191,7 +179,6 @@ few extra R libraries are imported and used:
         multiple-axes, and 3D (WebGL based) charts.
 \end{itemize}
 ```
--   Describe the software implementation.
 
 The deSolve library is used the solve the multiple differential
 equations in the model. These are mainly used to calculate the
@@ -204,9 +191,6 @@ make interactive plots in R.
 \newpage
 
 ## Model configuration
-
--   Explain chosen initial state, parameter values and time sequence.
-    Use tables with values as for example below.
 
 The model uses a lot of different parameters and constants as seen in
 the multiple formulas and the table below. Every parameter has a initial
@@ -274,8 +258,6 @@ times <- seq(0, 10, by = 0.01)
 
 # Results
 
--   Introduction of results, how does it answer your research questions.
-
 ## The Model
 In this section, the results of the simulation are shown. The model
 shows the trajectory of a football based on a calculation taking
@@ -302,16 +284,22 @@ model <- function(t, y, parms){
     V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) 
     
     # Magnus force components
-    lambda.z <- lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
-    lambda.x <- lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
-    lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
+    lambda.z <- lambda * 
+      (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
+    lambda.x <- lambda * 
+      (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
+    lambda.y <- lambda * 
+      (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
 
     # Accelerations
-    az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) 
+    az <- (-k * velocity.z * V + lambda * 
+             (angular.y*velocity.x- angular.x * velocity.y) 
            * e^-mu - m * g) / m
-    ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) 
+    ax <- (-k * velocity.x * V + lambda * 
+             (angular.y*velocity.z- angular.z * velocity.y) 
            * e^-mu) / m
-    ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) 
+    ay <- (-k * velocity.y * V  + lambda * 
+             (angular.x*velocity.z- angular.z * velocity.x) 
            * e^-mu) / m
     
     acc <- c(ax, ay, az)
@@ -349,7 +337,8 @@ plot(output$position.y,
      xlab = "< Player | Goal >",
      main = "Trajectory from the side")
 
-segments(x0 = 30, y0 = min(output$position.z), x1 = 30, y1 = 2.44, col = "red")
+segments(x0 = 30, y0 = min(output$position.z), 
+         x1 = 30, y1 = 2.44, col = "red")
 
 # 2 dimensional fig of trajectory
 plot(output$position.x,
@@ -360,13 +349,25 @@ plot(output$position.x,
      xlab = "< Left | Right >",
      main = "Trajectory from the front")
 # first line from (-3.66, 0) to (-3.66, 2.44)
-segments(x0 = -3.66, y0 = 0, x1 = -3.66, y1 = 2.44, col = "red")
+segments(x0 = -3.66, 
+         y0 = 0, 
+         x1 = -3.66, 
+         y1 = 2.44, 
+         col = "red")
 
 # second line from (-3.66, 2.44) to (3.66, 2.44)
-segments(x0 = -3.66, y0 = 2.44, x1 = 3.66, y1 = 2.44, col = "red")
+segments(x0 = -3.66, 
+         y0 = 2.44, 
+         x1 = 3.66, 
+         y1 = 2.44, 
+         col = "red")
 
 # third line from (3.66, 2.44) to (3.66, 0)
-segments(x0 = 3.66, y0 = 2.44, x1 = 3.66, y1 = 0, col = "red")
+segments(x0 = 3.66, 
+         y0 = 2.44, 
+         x1 = 3.66, 
+         y1 = 0, 
+         col = "red")
 
 # 2 dimensional fig of trajectory
 plot(x = output$position.x,
@@ -377,26 +378,22 @@ plot(x = output$position.x,
      xlab = "< Left | Right >",
      main = "Trajectory from above")
  # first line from (-3.66, 30) to (3.66, 30)
-segments(x0 = -3.66, y0 = 30, x1 = 3.66, y1 = 30, col = "red")
+segments(x0 = -3.66, 
+         y0 = 30, 
+         x1 = 3.66, 
+         y1 = 30, 
+         col = "red")
 
 
 ```
 
 In this figure \@ref(fig:figures), three perspectives of the trajectory are shown: the
 side, front, and above perspectives. A goal is lined out in red,
-standing 30 meters from the shot. In the perspectives form the frond and
-above, it is visible that the arc is skewed to the right side before
-travelling to the left. This is the Magnus effect.
-```{r fig.cap="A 3d plot showing the same trajectory", fig.show='hold', fig.align='center', out.width='50%'}
+standing 30 meters from the shot. In the perspectives form the front and above, it is visible that that the ball begins by traveling in a straight line before skewing to the left. This is the Magnus effect.
+```{r fig.cap="A 3d plot showing the same trajectory as seen in figure 3.1", fig.show='hold', fig.align='center', out.width='50%'}
 knitr::include_graphics(c('../images/3d_plot.png', "../images/3d_plot2.png"))
 ```
 
--   Describe what can be seen in such way that it leads to an answer to
-    your research questions
--   Give your figures a number and a descriptive title.
--   Provide correct axis labels (unit and quantity), legend and caption.
--   Always refer to and discuss your figures and tables in the text -
-    they never stand alone.
 
 \newpage
 
@@ -407,7 +404,7 @@ knitr::include_graphics(c('../images/3d_plot.png', "../images/3d_plot2.png"))
 The original paper used for this project was confusing, and there were
 uncertainties in the math, with powers added without explanation. Our
 powers and coefficients differ from those used in the paper. To deal 
-with this was a challange to say the least. Nevertheless, the model we 
+with this was a challenge to say the least. Nevertheless, the model we 
 presented still shows a realistic trajectory of the football, accounting
 for different forces such as drag, gravity,and the Magnus effect. 
 Improvements could still be made, such as refining the constant we use 
@@ -415,20 +412,13 @@ for the Magnus force. Overall, we consider this a somewhat valid model
 that functions as we expected. As is visible
 in Figure 1. 
 
--   Compare your results with what is expecting from the literature and
-    discuss differences with them.
--   Discuss striking and surprising results.
--   Discuss weaknesses in your research and how they could be addressed.
 
 ## General conclusion and perspective
-
--   Discuss what your goal was, what the end result is and how you could
-    continue working from here.
 
 Our goal aimed at realistically simulating the trajectory of a football when 
 kicked. With all forces acting on the ball it was quite the challenge, as 
 mentioned before. Overall the end result is a success. We can produce a 
-realistic trajectory ,without a bounce, in 3d space. In the future we could 
+realistic trajectory, without a bounce, in 3d space. In the future we could 
 expand op on our project we could add a bounce. Furthering the capabilities of 
 our model. Making the model not only suited for simulating a shot but also 
 include passes.
@@ -467,7 +457,8 @@ rho <- 1.20
 cw <- 0.5
 cm <- 1
 parameters <- c(m = 0.445, k = (1/2) * cw * rho * (pi * r^2),
-                mu = 0.1, g = 9.81, km = cm * 8 * rho * r^3, f = 10,
+                mu = 0.1, g = 9.81, 
+                km = cm * 8 * rho * r^3, f = 10,
                 lambda =  8/3*pi*r^3, e = exp(1))
 
 # state of start
@@ -498,14 +489,23 @@ model <- function(t, y, parms){
     V <- sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) 
     
     # Magnus force
-    lambda.z <- lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
-    lambda.x <- lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
-    lambda.y <- lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
+    lambda.z <- lambda * 
+      (angular.y*velocity.x- angular.x * velocity.y) * e^-mu
+    lambda.x <- lambda * 
+      (angular.y*velocity.z- angular.z * velocity.y) * e^-mu
+    lambda.y <- lambda * 
+      (angular.x*velocity.z- angular.z * velocity.x) * e^-mu
 
 
-    az <- (-k * velocity.z * V + lambda * (angular.y*velocity.x- angular.x * velocity.y) * e^-mu - m * g) / m
-    ax <- (-k * velocity.x * V + lambda * (angular.y*velocity.z- angular.z * velocity.y) * e^-mu) / m
-    ay <- (-k * velocity.y * V  + lambda * (angular.x*velocity.z- angular.z * velocity.x) * e^-mu) / m
+    az <- (-k * velocity.z * V + lambda * 
+             (angular.y*velocity.x- angular.x * velocity.y)
+           * e^-mu - m * g) / m
+    ax <- (-k * velocity.x * V + lambda * 
+             (angular.y*velocity.z- angular.z * velocity.y)
+           * e^-mu) / m
+    ay <- (-k * velocity.y * V  + lambda * 
+             (angular.x*velocity.z- angular.z * velocity.x) 
+           * e^-mu) / m
 
     acc <- c(ax, ay, az)
     return(list(c(acc, velocity, angular)))
