@@ -87,8 +87,7 @@ knitr::include_graphics('../images/forcesFootball.jpg')
 
 ### Magnus Force Implimentation
 
-There are multiple forces that are interaction with the ball when u kick
-it. Things like gravity, acceleration and air resistance. But since the
+There are multiple forces that are interaction with the ball when you kick it. Things like gravity, acceleration and air resistance. But since the
 ball has a spin the magnus force comes in to play as well. This force
 deflects the ball in flight \cite{Che21}. The formula for the magnitude
 of the acceleration created by magnus force is the following.
@@ -101,25 +100,32 @@ $$ \lambda = \frac{8}{3} \pi \rho r^3 $$
 
 Equals:
 
-$$ \overrightarrow{f} = \lambda \cdot  \begin{vmatrix} \overrightarrow{i} & 
-\overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ V_{x} & 
-V_{y} & V_{z} \end{vmatrix} $$
+$$ \overrightarrow{F} = \lambda \cdot  \begin{vmatrix} \overrightarrow{i} & 
+\overrightarrow{j} & \overrightarrow{k}\\ \omega_{x} & \omega_{y} & \omega_{z} \\ v_{x} & 
+v_{y} & v_{z} \end{vmatrix} $$
 
-The $\omega$ is the spin on the ball when kicked aka the angular
-velocity. The $r$ stands for radius and $\rho$ is the density of the
-ball. $V$ stands for the velocity relative to the surrounding air. In
-the model we will implement the velocity for the general displacement of
+The $\omega$ is the spin on the ball when kicked aka the angular velocity. The $r$ stands for radius and $\rho$ is the density of the ball. $v$ stands for the velocity relative to the surrounding air. In the model we will implement the velocity for the general displacement of
 the ball in like the formula below.
 
-$$ \frac{\delta V}{\delta t} = \sqrt{V_{x}^2 + V_{y}^2 + V_{z}^2} $$
+$$
+|\vec{v}| = \sqrt{v_{x}^2 + v_{y}^2 + v_{z}^2}
+$$
 Now we solve the magnus displacement for each axis, first for
-x:$$ \frac{\delta\lambda_{x}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{z}- \omega_{z} \cdot V_{y}) \cdot e^-\mu $$
+x:
+$$
+\frac{d a_x}{dt} = \lambda (\omega_y v_z - \omega_z v_y) e^{-\mu}
+$$
+
 
 Now for
-y:$$ \frac{\delta \lambda_{y}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{z}- \omega_{z} \cdot V_{x}) \cdot e^-\mu $$
+y:  $$
+\frac{d a_y}{dt} = \lambda (\omega_z v_x - \omega_x v_z) e^{-\mu}
+$$
 
 And for
-z:$$ \frac{\delta\lambda_{z}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{x}- \omega_{x} \cdot V_{y}) \cdot e^-\mu $$
+z:$$
+\frac{d a_z}{dt} = \lambda (\omega_x v_y - \omega_y v_x) e^{-\mu}
+$$
 
 ### Acceleration
 
@@ -127,7 +133,7 @@ The speed of the ball slows down over time due to all acting forces on
 it. These forces are magnus force, air resistance and gravity. Now to
 add them all together. First for the vertical axis:
 
-$$ \frac{\delta a_{z}}{\delta t} = \frac{-k \cdot V_{z} \cdot V + \lambda_{z} - m \cdot g}{m} $$
+$$ \frac{\delta a_{z}}{\delta t} = \frac{-k \cdot v_{z} \cdot v + \lambda_{z} - m \cdot g}{m} $$
 
 Here, $k$ represents the air resistance, $v_z$ the upward speed, $V$ is
 the total speed on the ball, $m$ is the total mass , $g$ is the force of
@@ -135,13 +141,13 @@ gravity and $\lambda_z$ is the magnus.
 
 Second the horizantal axis:
 
-$$ \frac{\delta a_{x}}{\delta t} = \frac{-k \cdot V_{x} \cdot V + \lambda_{x} }{m} $$
+$$ \frac{\delta a_{x}}{\delta t} = \frac{-k \cdot v_{x} \cdot v + \lambda_{x} }{m} $$
 
 Here, $V_x$ is the horizontal speed and $\lambda_x$ is the horizontal
 magnus force.
 
 Third is the sideways
-direction:$$ \frac{\delta a_{y}}{\delta t} = \frac{-k \cdot V_{y} \cdot V + \lambda_{y}}{m} $$
+direction:$$ \frac{\delta a_{y}}{\delta t} = \frac{-k \cdot v_{y} \cdot v + \lambda_{y}}{m} $$
 
 Here, $V_y$ is the sideways speed and $\lambda_y$ is the magnus force in
 the sideways direction.
