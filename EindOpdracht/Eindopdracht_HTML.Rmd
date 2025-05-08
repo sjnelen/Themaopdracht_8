@@ -93,7 +93,7 @@ ball has a spin the magnus force comes in to play as well. This force
 deflects the ball in flight \cite{Che21}. The formula for the magnitude
 of the acceleration created by magnus force is the following.
 
-$$ \overrightarrow{f} = \frac{8}{3} \pi \rho r^3\cdot\overrightarrow{\omega} \cdot \overrightarrow{V}$$
+$$ \overrightarrow{F} = \frac{8}{3} \pi \rho r^3\times\overrightarrow{\omega} \times \overrightarrow{v}$$
 
 The constant:
 
@@ -111,7 +111,7 @@ ball. $V$ stands for the velocity relative to the surrounding air. In
 the model we will implement the velocity for the general displacement of
 the ball in like the formula below.
 
-$$ \frac{\delta V}{\delta t} = \sqrt{velocity_{x}^2 + velocity_{y}^2 + velocity_{z}^2} $$
+$$ \frac{\delta V}{\delta t} = \sqrt{V_{x}^2 + V_{y}^2 + V_{z}^2} $$
 Now we solve the magnus displacement for each axis, first for
 x:$$ \frac{\delta\lambda_{x}}{\delta t} = \lambda \cdot (\omega_{y} \cdot V_{z}- \omega_{z} \cdot V_{y}) \cdot e^-\mu $$
 
